@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS  app_info (
   server_addr varchar(255) DEFAULT NULL,
   process_id varchar(255) DEFAULT NULL,
   auto_restart int DEFAULT 0,
-  test_url varchar(255) DEFAULT NULL
+  test_url varchar(255) DEFAULT NULL,
+  start_cmd varchar(255) default null
 ) ;
 
 
