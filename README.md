@@ -11,3 +11,8 @@ monitor your app or programer, restart if the app death
 
 ### 快速入门
 下载最新jar包并启动， 访问控制页面。 添加项目。 注意将项目本身添加为开机启动。
+
+
+
+### 部署方式
+项目提供两种部署模式, 一种是部署服务端+客户端，另外是部署服务端配置其他服务器远程SSH账号密码。
