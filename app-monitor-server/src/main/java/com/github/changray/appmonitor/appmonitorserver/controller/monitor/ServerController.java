@@ -7,6 +7,7 @@ import com.github.misterchangra.appmonitor.base.dto.PaginationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
@@ -30,8 +31,8 @@ public class ServerController {
     private ServerInfoDao serverInfoDao;
 
     @RequestMapping("/list")
-    public BaseResult<PaginationDTO<ServerInfo>> list() {
-        List<ServerInfo> all = serverInfoDao.findAll();
+    public BaseResult<PaginationDTO<ServerInfo>> list(@RequestParam("remark") String remark) {
+        List<ServerInfo> all = serverInfoDao.findAll2(remark);
         return BaseResult.page(all);
     }
 

@@ -7,10 +7,11 @@ import * as tools from '@/api/_tools.js'
 /**
  * @description 列表
  */
-export function CLIENT_INFO_LIST () {
+export function CLIENT_INFO_LIST (param) {
   return request({
     url: '/server/list',
-    method: 'get'
+    method: 'get',
+    params: param
   })
 }
 

@@ -19,8 +19,7 @@
         @row-add="handleRowAdd"
         @dialog-cancel="handleDialogCancel">
         <el-button slot="header" style="margin-bottom: 5px" @click="addRow"><i class="fa fa-plus" aria-hidden="true"></i> 新增</el-button>
-        <el-input slot="header" style="margin-bottom: 5px"  @click="addRow" placeholder="服务器ip" suffix-icon="el-icon-search"> </el-input>
-        <el-input slot="header" style="margin-bottom: 5px" placeholder="服务器备注" suffix-icon="el-icon-caret-bottom"> </el-input>
+        <el-input slot="header" style="margin-bottom: 5px" v-model="query.remark" placeholder="服务器备注" > </el-input>
         <el-button slot="header" style="margin-bottom: 5px" @click="fetchData"><i class="el-icon-search"></i> 搜索</el-button>
       </d2-crud>
     </el-card>
@@ -33,6 +32,9 @@
   export default {
     data () {
       return {
+        query: {
+          remark: ''
+        },
         rowHandle: {
           edit: {
             icon: 'el-icon-edit',
@@ -229,7 +231,7 @@
       fetchData () {
         this.loading = true
 
-        monitorApi.CLIENT_INFO_LIST().then(res => {
+        monitorApi.CLIENT_INFO_LIST({remark: this.query.remark}).then(res => {
           this.data = res.list
           this.data.forEach(tmp => {
               tmp.showRemoveButton= true;
