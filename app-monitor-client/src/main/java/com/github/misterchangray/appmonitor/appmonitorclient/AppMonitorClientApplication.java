@@ -1,5 +1,6 @@
 package com.github.misterchangray.appmonitor.appmonitorclient;
 
+import com.github.misterchangray.appmonitor.appmonitorclient.service.UDPBroadcastService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

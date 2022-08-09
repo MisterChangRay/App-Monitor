@@ -2,17 +2,21 @@
 server:
   port: 8081
   servlet:
-    context-path: /appmonitor
+    context-path: /console
 
 
-
-
+client:
+  udpPort:23670
 spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
   datasource:
     driver-class-name: org.h2.Driver
-    #ÅäÖÃh2Êý¾Ý¿âµÄÁ¬½ÓµØÖ·
+    #ï¿½ï¿½ï¿½ï¿½h2ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ö·
     url: jdbc:h2:file:./appMonitorDB
     username: sa
     password: 123123

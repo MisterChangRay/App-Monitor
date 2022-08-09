@@ -1,1 +1,8 @@
+server:
+  ip: 127.0.0.1
+  port: 23670
 
+client:
+  ip: 127.0.0.1
+  name: test
+  udpPort: 23670
