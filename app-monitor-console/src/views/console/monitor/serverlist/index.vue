@@ -75,7 +75,7 @@
         columns: [
           {
             title: '服务器Ip',
-            key: 'ip'
+            key: 'ip',
           },
           {
             title: '服务器备注',
@@ -102,28 +102,49 @@
           ip: {
             title: '服务器Ip',
             value: '',
+            component: {
+              span: 11,
+              placeholder: "多个逗号分隔"
+            }
           },
           port: {
             title: 'SSH端口',
             value: '22',
+            component: {
+              span: 11,
+              placeholder: "使用SSH启动必填"
+            }
           },
           username: {
             title: 'SSH账号',
             value: '',
+            component: {
+              span: 11,
+              placeholder: "使用SSH启动必填"
+            }
           },
           password: {
             title: 'SSH密码',
             value: '',
+            component: {
+              span: 11,
+              placeholder: "使用SSH启动必填"
+            }
           },
           remark: {
             title: '备注',
             value: '',
+          component: {
+            span: 11,
+            placeholder: ""
+          }
           },
         },
         formOptions: {
           labelWidth: '80px',
           labelPosition: 'left',
-          saveLoading: false
+          saveLoading: false,
+          gutter: 50,
         },
         loading: false,
         pagination: {
@@ -158,10 +179,7 @@
           return "未知"
       },
       handleDialogOpen ({ mode }) {
-        this.$message({
-          message: '打开模态框，模式为：' + mode,
-          type: 'success'
-        })
+
       },
       // 普通的新增
       addRow () {

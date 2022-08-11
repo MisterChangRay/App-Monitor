@@ -3,19 +3,20 @@ CREATE TABLE IF NOT EXISTS  app_info (
   id integer not null generated always as identity (start with 1 increment by 1),
   project_group varchar(255) DEFAULT NULL ,
   project_name varchar(255) DEFAULT NULL,
-  file_name varchar(255) DEFAULT NULL ,
-  path varchar(255) DEFAULT NULL,
-  dubbo_port varchar(255) DEFAULT NULL,
+  full_file_path varchar(255) DEFAULT NULL ,
   port varchar(255) DEFAULT NULL ,
   remark varchar(255) DEFAULT NULL ,
   status int DEFAULT 0,
-  create_time TIMESTAMP DEFAULT NULL ,
-  start_time TIMESTAMP DEFAULT NULL,
-  server_addr varchar(255) DEFAULT NULL,
+  server_ip varchar(255) DEFAULT NULL,
   process_id varchar(255) DEFAULT NULL,
   auto_restart int DEFAULT 0,
-  test_url varchar(255) DEFAULT NULL,
-  start_cmd varchar(255) default null
+  test_cmd varchar(255) DEFAULT NULL,
+  start_cmd varchar(255) default null,
+  create_time TIMESTAMP DEFAULT NULL ,
+  update_time TIMESTAMP DEFAULT NULL,
+  last_start_time TIMESTAMP DEFAULT NULL,
+  comm_type int DEFAULT 0,
+  scan_type int DEFAULT 0
 ) ;
 
 
