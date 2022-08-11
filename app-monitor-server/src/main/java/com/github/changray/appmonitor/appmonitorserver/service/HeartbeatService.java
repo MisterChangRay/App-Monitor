@@ -12,16 +12,16 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class UDPBroadcastService {
+public class HeartbeatService {
     private static int udpPort;
     private static String ip;
-    private static String httpPort;
+    private static int httpPort;
     /**
      * 每5秒广播一次服务器信息
      */
     @Scheduled(cron = "0/5 * * * * ?")
     public void broadcast() {
-        ServerInfo serverInfo = new ServerInfo(API.SERVER_INFO.getType(), ip, udpPort);
+        ServerInfo serverInfo = new ServerInfo(API.SERVER_INFO.getType(), ip, httpPort);
         byte[] bytes = MagicByte.unpackToByte(serverInfo);
         try {
             UDPUtil.sendUDP(IPUtil.BROADCAST_ADDRESS, udpPort, bytes);
@@ -32,20 +32,20 @@ public class UDPBroadcastService {
 
     @Value("${client.udpPort:23670}")
     public  void setUdpPort(int udpPort) {
-        UDPBroadcastService.udpPort = udpPort;
+        HeartbeatService.udpPort = udpPort;
     }
 
     @Value("${server.port:}")
-    public  void setHttpPort(String httpPort) {
-        UDPBroadcastService.httpPort = httpPort;
+    public  void setHttpPort(int httpPort) {
+        HeartbeatService.httpPort = httpPort;
     }
 
     @Value("${server.ip:}")
     public  void setIp(String ip) {
         if(ip.length() == 0) {
-            UDPBroadcastService.ip = IPUtil.getLocalAddress();
+            HeartbeatService.ip = IPUtil.getLocalAddress();
             return;
         }
-        UDPBroadcastService.ip = ip;
+        HeartbeatService.ip = ip;
     }
 }

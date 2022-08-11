@@ -1,6 +1,10 @@
 server:
-  ip: 127.0.0.1
   port: 23670
+
+# 配置服务器 通讯IP 和端口
+#monitor:
+#  serverIp: 111
+#  serverPort: 111
 
 client:
   ip: 127.0.0.1

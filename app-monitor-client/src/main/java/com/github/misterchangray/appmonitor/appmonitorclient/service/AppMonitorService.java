@@ -1,7 +1,9 @@
 package com.github.misterchangray.appmonitor.appmonitorclient.service;
 
 
-import org.springframework.stereotype.Service;
+import com.github.misterchangra.appmonitor.base.dto.message.MonitorProcessInfo;
+
+import java.util.List;
 
 /**
  * 监视服务, 监视应用启停情况
@@ -11,10 +13,10 @@ import org.springframework.stereotype.Service;
  * 2. 通过文件名进行监控
  *
  */
-@Service
 public class AppMonitorService {
+    List<MonitorProcessInfo> monitorMonitorProcessInfo;
 
-    public void monitor() {
+    public void start() {
 
     }
 }

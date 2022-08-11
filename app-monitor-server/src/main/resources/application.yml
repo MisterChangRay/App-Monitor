@@ -7,6 +7,7 @@ server:
 
 client:
   udpPort:23670
+
 spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect

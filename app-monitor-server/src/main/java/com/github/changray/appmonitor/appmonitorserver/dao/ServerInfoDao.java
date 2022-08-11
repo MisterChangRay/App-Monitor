@@ -13,4 +13,7 @@ public interface ServerInfoDao extends JpaRepository<ServerInfo, String> {
 
     @Query(value = "select * from server_info where remark like :remark%", nativeQuery = true)
     List<ServerInfo> findAll2(@Param(value = "remark") String remark);
+
+    @Query(value = "select * from server_info where ip like %:ip%", nativeQuery = true)
+    List<ServerInfo>  findByIp(@Param(value = "ip") String ip);
 }

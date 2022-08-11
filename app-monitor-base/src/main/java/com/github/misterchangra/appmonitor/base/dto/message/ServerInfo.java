@@ -19,6 +19,9 @@ public class ServerInfo {
 
     }
 
+    public ServerInfo() {
+    }
+
     public ServerInfo(byte messageType) {
         this.messageType = messageType;
     }
