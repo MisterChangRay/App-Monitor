@@ -63,6 +63,7 @@
 
 <script>
   import * as monitorApi from '@/api/monitorApi.js'
+  import Vue from "vue";
 
   export default {
     data () {
@@ -145,9 +146,10 @@
             width: '100'
           },
           {
-            title: '服务器IP',
+            title: '服务器',
             key: 'serverIp',
-            width: '100'
+            width: '150',
+            formatter: this.columnIPFormatter
           },
           {
             title: '最新一次通讯',
@@ -288,6 +290,15 @@
       this.fetchData()
     },
     methods: {
+      columnIPFormatter (row, column, cellValue, index) {
+        if(cellValue) {
+          for (let i in this.CLIENT_INFO_LIST) {
+            if(this.CLIENT_INFO_LIST[i].ip == cellValue) {
+              return this.formatSelectLabel(this.CLIENT_INFO_LIST[i])
+            }
+          }
+        }
+      },
       // 表单事件联动
       formDataChange({ key, value }) {
         let self = this;
