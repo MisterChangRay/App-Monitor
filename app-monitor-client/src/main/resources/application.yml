@@ -10,3 +10,8 @@ client:
   ip: 127.0.0.1
   name: test
   udpPort: 23670
+
+logging:
+  level:
+    root: debug
+  path: ./logs/

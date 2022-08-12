@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 
@@ -49,12 +50,14 @@ public class AppInfoController {
     public BaseResult add(@RequestBody AppInfo appInfo) {
         appInfo.setStatus(1);
         appInfo.setCreateTime(Timestamp.from(Instant.now()));
+        appInfo.setUpdateTime(new Date());
         appInfoDao.save(appInfo);
         return BaseResult.success();
     }
 
     @RequestMapping("/edit")
     public BaseResult edit(@RequestBody AppInfo appInfo) {
+        appInfo.setUpdateTime(new Date());
         appInfoDao.save(appInfo);
         return BaseResult.success();
     }

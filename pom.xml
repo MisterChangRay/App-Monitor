@@ -10,9 +10,11 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>app-monitor-base</module>
+        <module>app-monitor-client</module>
+        <module>app-monitor-server</module>
     </modules>
     <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

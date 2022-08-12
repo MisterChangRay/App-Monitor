@@ -40,12 +40,14 @@ public class ServerController {
     public BaseResult add(@RequestBody ServerInfo serverInfo) {
         serverInfo.setStatus(1);
         serverInfo.setCreateTime(Timestamp.from(Instant.now()));
+        serverInfo.setUpdateTime(new Date());
         serverInfoDao.save(serverInfo);
         return BaseResult.success();
     }
 
     @RequestMapping("/edit")
     public BaseResult edit(@RequestBody ServerInfo serverInfo) {
+        serverInfo.setUpdateTime(new Date());
         serverInfoDao.save(serverInfo);
         return BaseResult.success();
     }

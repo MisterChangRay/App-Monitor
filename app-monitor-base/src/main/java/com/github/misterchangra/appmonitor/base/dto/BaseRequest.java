@@ -5,9 +5,9 @@ import com.github.misterchangra.appmonitor.base.util.HTTPUtil;
 
 public class BaseRequest<R> {
     public  String ip;
-    public  int port;
+    public  Integer port;
 
-    public BaseRequest(String ip, int port) {
+    public BaseRequest(String ip, Integer port) {
         this.ip = ip;
         this.port = port;
     }

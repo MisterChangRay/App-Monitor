@@ -5,21 +5,23 @@ import com.github.misterchangray.core.annotation.MagicField;
 
 import java.util.List;
 
-@MagicClass
 public class ClientInfo {
-    @MagicField(order = 1)
-    private byte messageType;
-    @MagicField(order = 6, size = 15)
     private String ip;
-    @MagicField(order = 9, size = 300)
     private String name;
+    // 通过配置文件更新时间决定是否重新下发配置
+    private long configSign;
+    private int threadsCount;
+    private int processCount;
+    private int memUsed;
+    private List<String> warning;
+    private List<MonitorProcessExtractInfo> monitorProcessExtractInfos;
 
-    public byte getMessageType() {
-        return messageType;
+    public long getConfigSign() {
+        return configSign;
     }
 
-    public void setMessageType(byte messageType) {
-        this.messageType = messageType;
+    public void setConfigSign(long configSign) {
+        this.configSign = configSign;
     }
 
     public String getIp() {
@@ -38,10 +40,50 @@ public class ClientInfo {
         this.name = name;
     }
 
-    public ClientInfo(byte messageType, String ip, String name) {
-        this.messageType = messageType;
+    public ClientInfo(String ip, String name, long configSign) {
         this.ip = ip;
         this.name = name;
+        this.configSign = configSign;
+    }
+
+    public int getThreadsCount() {
+        return threadsCount;
+    }
+
+    public void setThreadsCount(int threadsCount) {
+        this.threadsCount = threadsCount;
+    }
+
+    public int getProcessCount() {
+        return processCount;
+    }
+
+    public void setProcessCount(int processCount) {
+        this.processCount = processCount;
+    }
+
+    public int getMemUsed() {
+        return memUsed;
+    }
+
+    public void setMemUsed(int memUsed) {
+        this.memUsed = memUsed;
+    }
+
+    public List<String> getWarning() {
+        return warning;
+    }
+
+    public void setWarning(List<String> warning) {
+        this.warning = warning;
+    }
+
+    public List<MonitorProcessExtractInfo> getMonitorProcessExtractInfos() {
+        return monitorProcessExtractInfos;
+    }
+
+    public void setMonitorProcessExtractInfos(List<MonitorProcessExtractInfo> monitorProcessExtractInfos) {
+        this.monitorProcessExtractInfos = monitorProcessExtractInfos;
     }
 
     public ClientInfo() {

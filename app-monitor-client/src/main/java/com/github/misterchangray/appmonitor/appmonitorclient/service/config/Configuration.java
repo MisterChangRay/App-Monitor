@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @org.springframework.context.annotation.Configuration()
 public class Configuration {
@@ -20,8 +22,20 @@ public class Configuration {
     private String clientName;
     @Value("${client.udpPort:23670}")
     private int udpPort;
+    private volatile long configSign = 0;
 
-    private List<MonitorProcessInfo> processInfos;
+    public long getConfigSign() {
+        return configSign;
+    }
+
+    public void setConfigSign(long configSign) {
+        this.configSign = configSign;
+    }
+
+    public boolean hasServerConfig() {
+        return Objects.nonNull(serverIp) && Objects.nonNull(serverPort);
+    }
+    private List<MonitorProcessInfo> processInfos = new ArrayList<>();
 
     public List<MonitorProcessInfo> getProcessInfos() {
         return processInfos;

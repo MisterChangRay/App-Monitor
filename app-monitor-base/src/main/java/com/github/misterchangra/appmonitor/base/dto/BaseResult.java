@@ -5,6 +5,16 @@ import java.util.List;
 public class BaseResult<T> {
     private int code;
     private T data;
+    private String sign;
+
+    public String getSign() {
+        return sign;
+    }
+
+    public BaseResult<T> setSign(String sign) {
+        this.sign = sign;
+        return this;
+    }
 
     public int getCode() {
         return code;
@@ -49,7 +59,9 @@ public class BaseResult<T> {
     public BaseResult(int code) {
         this.code = code;
     }
+    public BaseResult() {
 
+    }
 
     public static BaseResult success() {
         return new BaseResult(0);

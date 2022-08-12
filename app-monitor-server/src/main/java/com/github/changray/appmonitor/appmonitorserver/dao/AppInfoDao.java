@@ -14,4 +14,7 @@ public interface AppInfoDao extends JpaRepository<AppInfo, Long> {
 
     @Query(value = "select project_group from app_info", nativeQuery = true)
     List<String> groupList();
+
+    @Query(value = "select * from app_info where server_ip like %:ip%", nativeQuery = true)
+    List<AppInfo> findAllByIp(@Param("ip") String ip);
 }
