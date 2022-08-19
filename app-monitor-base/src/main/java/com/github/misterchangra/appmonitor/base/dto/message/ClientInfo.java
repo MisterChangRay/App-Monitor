@@ -10,14 +10,68 @@ public class ClientInfo {
     private String name;
     // 通过配置文件更新时间决定是否重新下发配置
     private long configSign;
-    private int threadsCount;
-    private int processCount;
-    private int memUsed;
+
+    private String totalMemUse;
+    private String totalMem;
+    private String threads;
+    private String avgload;
+    private String cpuUserUsage;
+    private String cpuSysUsage;
+
+
     private List<String> warning;
     private List<MonitorProcessExtractInfo> monitorProcessExtractInfos;
 
     public long getConfigSign() {
         return configSign;
+    }
+
+    public String getTotalMemUse() {
+        return totalMemUse;
+    }
+
+    public void setTotalMemUse(String totalMemUse) {
+        this.totalMemUse = totalMemUse;
+    }
+
+    public String getTotalMem() {
+        return totalMem;
+    }
+
+    public void setTotalMem(String totalMem) {
+        this.totalMem = totalMem;
+    }
+
+    public String getThreads() {
+        return threads;
+    }
+
+    public void setThreads(String threads) {
+        this.threads = threads;
+    }
+
+    public String getAvgload() {
+        return avgload;
+    }
+
+    public void setAvgload(String avgload) {
+        this.avgload = avgload;
+    }
+
+    public String getCpuUserUsage() {
+        return cpuUserUsage;
+    }
+
+    public void setCpuUserUsage(String cpuUserUsage) {
+        this.cpuUserUsage = cpuUserUsage;
+    }
+
+    public String getCpuSysUsage() {
+        return cpuSysUsage;
+    }
+
+    public void setCpuSysUsage(String cpuSysUsage) {
+        this.cpuSysUsage = cpuSysUsage;
     }
 
     public void setConfigSign(long configSign) {
@@ -46,29 +100,6 @@ public class ClientInfo {
         this.configSign = configSign;
     }
 
-    public int getThreadsCount() {
-        return threadsCount;
-    }
-
-    public void setThreadsCount(int threadsCount) {
-        this.threadsCount = threadsCount;
-    }
-
-    public int getProcessCount() {
-        return processCount;
-    }
-
-    public void setProcessCount(int processCount) {
-        this.processCount = processCount;
-    }
-
-    public int getMemUsed() {
-        return memUsed;
-    }
-
-    public void setMemUsed(int memUsed) {
-        this.memUsed = memUsed;
-    }
 
     public List<String> getWarning() {
         return warning;

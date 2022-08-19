@@ -1,25 +1,27 @@
-package com.github.changray.appmonitor.appmonitorserver.service;
+package com.github.changray.appmonitor.appmonitorserver.listeners;
 
+import com.github.changray.appmonitor.appmonitorserver.events.HeartBeatEvent;
 import com.github.misterchangra.appmonitor.base.consts.API;
 import com.github.misterchangra.appmonitor.base.dto.message.ServerInfo;
 import com.github.misterchangra.appmonitor.base.util.IPUtil;
 import com.github.misterchangra.appmonitor.base.util.UDPUtil;
 import com.github.misterchangray.core.MagicByte;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Service
-public class HeartbeatService {
+public class HeartbeatListener {
     private static int udpPort;
     private static String ip;
     private static int httpPort;
     /**
      * 每5秒广播一次服务器信息
      */
-    @Scheduled(cron = "0/5 * * * * ?")
+    @EventListener(value = {HeartBeatEvent.class})
     public void broadcast() {
         ServerInfo serverInfo = new ServerInfo(API.SERVER_INFO.getType(), ip, httpPort);
         byte[] bytes = MagicByte.unpackToByte(serverInfo);
@@ -32,20 +34,20 @@ public class HeartbeatService {
 
     @Value("${client.udpPort:23670}")
     public  void setUdpPort(int udpPort) {
-        HeartbeatService.udpPort = udpPort;
+        HeartbeatListener.udpPort = udpPort;
     }
 
     @Value("${server.port:}")
     public  void setHttpPort(int httpPort) {
-        HeartbeatService.httpPort = httpPort;
+        HeartbeatListener.httpPort = httpPort;
     }
 
     @Value("${server.ip:}")
     public  void setIp(String ip) {
         if(ip.length() == 0) {
-            HeartbeatService.ip = IPUtil.getLocalAddress();
+            HeartbeatListener.ip = IPUtil.getLocalAddress();
             return;
         }
-        HeartbeatService.ip = ip;
+        HeartbeatListener.ip = ip;
     }
 }

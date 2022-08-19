@@ -1,6 +1,7 @@
 package com.github.changray.appmonitor.appmonitorserver.dao;
 
 import com.github.changray.appmonitor.appmonitorserver.dao.po.AppInfo;
+import com.github.changray.appmonitor.appmonitorserver.dao.dto.TaskInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,7 @@ public interface AppInfoDao extends JpaRepository<AppInfo, Long> {
 
     @Query(value = "select * from app_info where server_ip like %:ip%", nativeQuery = true)
     List<AppInfo> findAllByIp(@Param("ip") String ip);
+
+    List<AppInfo> findAllRemoteTask();
+
 }

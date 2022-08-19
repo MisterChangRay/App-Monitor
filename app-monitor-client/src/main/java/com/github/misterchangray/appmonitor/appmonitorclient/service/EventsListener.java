@@ -33,9 +33,9 @@ public class EventsListener {
     private Configuration configuration;
     @Autowired
     private ProcessProtectService processProtectService;
-    private CopyOnWriteArrayList<String> warningMsgQueue = new CopyOnWriteArrayList<>();
 
-
+    @Autowired
+    private HeartbeatService heartbeatService;
 
 
     /**
@@ -45,12 +45,12 @@ public class EventsListener {
      */
     @EventListener(value = {WarningMsgEvent.class})
     public void warningMsgEvent(WarningMsgEvent s) {
-        if(warningMsgQueue.size() > 0xff) {
+        if(configuration.getWarningMsgQueue().size() > 0xff) {
             // 超过 255 条就不上报了
             return;
         }
         logger.debug("增加警告消息 {}", s.getMsg());
-        warningMsgQueue.add(s.getMsg());
+        configuration.getWarningMsgQueue().add(s.getMsg());
     }
 
     /**
@@ -87,7 +87,7 @@ public class EventsListener {
         }
 
         if(res.getCode() == 0 && Objects.nonNull(res.getData()) && res.getData().size() > 0) {
-            logger.debug("配置文件更新 {}", s);
+            logger.info("配置文件更新 {}", s);
             configuration.setProcessInfos(res.getData());
             configuration.setConfigSign(Long.valueOf(res.getSign()));
         }
@@ -109,31 +109,15 @@ public class EventsListener {
      *
      * 心跳上报
      */
-    private long postClientInfoLastTime = System.currentTimeMillis();
     @EventListener(value = HeartbeatEvent.class)
-    public void postClientInfo() {
+    public void heatbeat() {
         if(!configuration.hasServerConfig()) {
             // 服务器配置无效, 直接返回
             return;
         }
 
+        heartbeatService.doPostHeatbeat();
 
-        int ttl = 5 * 1000;
-        if(System.currentTimeMillis() - postClientInfoLastTime < ttl) {
-            return;
-        }
-        logger.debug("执行心跳上报--");
-
-        ClientInfo clientInfo = new ClientInfo( configuration.getClientIp(), configuration.getClientName(), configuration.getConfigSign());
-        clientInfo.setWarning(this.warningMsgQueue);
-        String param = null;
-        try {
-            param = objectMapper.writeValueAsString(clientInfo);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        new ConfigInfoRequest(configuration.getServerIp(), configuration.getServerPort()).doRequest(API.CLIENT_INFO, param);
-        warningMsgQueue.clear();
 
     }
 }

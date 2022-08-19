@@ -2,6 +2,7 @@ package com.github.changray.appmonitor.appmonitorserver.dao.po;
 
 
 import javax.persistence.*;
+import java.io.File;
 import java.util.Date;
 
 @Table(name = "app_info")
@@ -59,8 +60,9 @@ public class AppInfo {
 
     /**
      * 应用连接方式
-     * 1. 通过客户端, 需要客户端部署 app_client.jar 包
-     * 2. 通过ssh进行监听
+     *
+     * bit 1: 通过客户端, 需要客户端部署 app_client.jar 包
+     * bit 2: 通过ssh进行监听
      */
     @Column(name="comm_type")
     private int commType;
@@ -77,6 +79,40 @@ public class AppInfo {
     @Column(name="scan_type")
     private int scanType;
 
+    // 进程父目录
+    private String processBaseDir;
+    // 进程文件名
+    private String processFileName;
+
+    public String getProcessBaseDir() {
+        if(null != this.processBaseDir) {
+            return processBaseDir;
+        }
+
+        int i = this.fullFilePath.lastIndexOf(File.separator);
+        if(i == -1) {
+            throw new RuntimeException("路径配置错误, fullFilePath=" + this.fullFilePath);
+        }
+        this.processBaseDir = this.fullFilePath.substring(0, i);
+        this.processFileName = this.fullFilePath.substring(i);
+        return this.processBaseDir;
+    }
+
+    public String getProcessFileName() {
+        if(null != this.processFileName) {
+            return processFileName;
+        }
+
+        int i = this.fullFilePath.lastIndexOf(File.separator);
+
+        if(i == -1) {
+            throw new RuntimeException("路径配置错误， fullFilePath="+ this.fullFilePath);
+        }
+
+        this.processBaseDir = this.fullFilePath.substring(0, i);
+        this.processFileName = this.fullFilePath.substring(i);
+        return this.processBaseDir;
+    }
 
     public String getTestCmd() {
         return testCmd;

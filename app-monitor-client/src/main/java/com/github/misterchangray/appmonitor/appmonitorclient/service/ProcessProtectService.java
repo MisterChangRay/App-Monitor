@@ -44,7 +44,7 @@ public class ProcessProtectService {
             }
 
 
-            if(processInfo.getCommType() == 2) {
+            if((processInfo.getCommType() & 0x1) == 0) {
                 // 通过 SSH 执行命令方式进行进程保护， 直接忽略
                 continue;
             }
@@ -70,7 +70,7 @@ public class ProcessProtectService {
                 continue;
             }
 
-            logger.debug("检测到进程已结束, 启动进程 fullPath: {}", processInfo.getFullFilePath());
+            logger.info("检测到进程已结束, 启动进程 fullPath: {}", processInfo.getFullFilePath());
             startProcess(processInfo);
 
         }

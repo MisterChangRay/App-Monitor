@@ -15,6 +15,10 @@ public abstract class BaseCommand<T> {
 
     public abstract T getResult();
 
+    public void setResult(StringBuilder result) {
+        this.result = result;
+    }
+
     public abstract String getCommand();
 
     public  BaseCommand<T> execCmd(String... param) {

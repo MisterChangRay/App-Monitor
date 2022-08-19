@@ -5,6 +5,13 @@ server:
     context-path: /console
 
 
+global:
+  config:
+    ssh:
+      username: xxx
+      password: xxx
+      port: 22
+
 client:
   udpPort:23670
 

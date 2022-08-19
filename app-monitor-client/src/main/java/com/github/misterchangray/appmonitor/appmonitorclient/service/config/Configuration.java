@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @org.springframework.context.annotation.Configuration()
 public class Configuration {
@@ -23,6 +24,15 @@ public class Configuration {
     @Value("${client.udpPort:23670}")
     private int udpPort;
     private volatile long configSign = 0;
+    private CopyOnWriteArrayList<String> warningMsgQueue = new CopyOnWriteArrayList<>();
+
+    public CopyOnWriteArrayList<String> getWarningMsgQueue() {
+        return warningMsgQueue;
+    }
+
+    public void setWarningMsgQueue(CopyOnWriteArrayList<String> warningMsgQueue) {
+        this.warningMsgQueue = warningMsgQueue;
+    }
 
     public long getConfigSign() {
         return configSign;

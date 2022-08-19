@@ -39,7 +39,7 @@ public class ScheduleTriggerService {
      * 或者 收到服务器心跳广播信息后自动上报心跳
      *
      */
-    @Scheduled(initialDelay=100, fixedRate = 15 * 1000)
+    @Scheduled(initialDelay=100, fixedRate = 30 * 1000)
     public void heartbeatSchedule() {
         applicationContext.publishEvent(new HeartbeatEvent(this));
     }
