@@ -4,6 +4,7 @@ import com.github.changray.appmonitor.appmonitorserver.dao.po.AppInfo;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHExecuteInfo;
+import com.github.misterchangra.appmonitor.base.util.FullFilePathUtil;
 
 public abstract class CheckerTask {
     protected AppInfo appInfo;
@@ -19,7 +20,7 @@ public abstract class CheckerTask {
     public abstract boolean check();
 
     public void start() {
-        sshClientService.execute(SSHExecuteInfo.build("cd " + appInfo.getProcessBaseDir()));
+        sshClientService.execute(SSHExecuteInfo.build("cd " + FullFilePathUtil.getProcessBaseDir(appInfo.getFullFilePath())));
         sshClientService.execute(SSHExecuteInfo.build(appInfo.getStartCmd()));
     }
 }

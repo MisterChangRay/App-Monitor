@@ -53,5 +53,5 @@ mybatis:
 
 logging:
   level:
-    root: debug
+    root: info
   path: ./logs/

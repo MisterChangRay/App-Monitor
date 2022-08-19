@@ -1,9 +1,9 @@
 package com.github.misterchangray.appmonitor.appmonitorclient.service;
 
-import com.github.misterchangra.appmonitor.base.command.BaseCommand;
 import com.github.misterchangra.appmonitor.base.command.FindInProcessCMD;
 import com.github.misterchangra.appmonitor.base.command.result.FindInProcessCMDResult;
 import com.github.misterchangra.appmonitor.base.dto.message.MonitorProcessInfo;
+import com.github.misterchangra.appmonitor.base.util.FullFilePathUtil;
 import com.github.misterchangray.appmonitor.appmonitorclient.service.config.Configuration;
 import com.github.misterchangray.appmonitor.appmonitorclient.service.events.WarningMsgEvent;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class ProcessProtectService {
      */
     private void startProcess(MonitorProcessInfo processInfo) {
         try {
-            Runtime.getRuntime().exec(processInfo.getStartCmd(), null, new File(processInfo.getProcessBaseDir()));
+            Runtime.getRuntime().exec(processInfo.getStartCmd(), null, new File(FullFilePathUtil.getProcessBaseDir(processInfo.getProcessBaseDir())));
         } catch (Exception e) {
             applicationContext.publishEvent(new WarningMsgEvent("执行启动脚本错误 -> " + e.toString()));
         }
@@ -96,7 +96,7 @@ public class ProcessProtectService {
      */
     private boolean checkProcessingByCustomScript(MonitorProcessInfo processInfo) {
         try {
-            Process proc = Runtime.getRuntime().exec(processInfo.getStartCmd(), null, new File(processInfo.getProcessBaseDir()));
+            Process proc = Runtime.getRuntime().exec(processInfo.getStartCmd(), null, new File(FullFilePathUtil.getProcessBaseDir(processInfo.getProcessBaseDir())));
             BufferedReader stdInput = new BufferedReader(new
                     InputStreamReader(proc.getInputStream()));
 

@@ -57,41 +57,6 @@ public class MonitorProcessInfo {
     private int scanType;
 
 
-    // 进程父目录
-    private String processBaseDir;
-    // 进程文件名
-    private String processFileName;
-
-    public String getProcessBaseDir() {
-        if(null != this.processBaseDir) {
-            return processBaseDir;
-        }
-
-        int i = this.fullFilePath.lastIndexOf(File.separator);
-        if(i == -1) {
-            throw new RuntimeException("路径配置错误, fullFilePath=" + this.fullFilePath);
-        }
-        this.processBaseDir = this.fullFilePath.substring(0, i);
-        this.processFileName = this.fullFilePath.substring(i);
-        return this.processBaseDir;
-    }
-
-    public String getProcessFileName() {
-        if(null != this.processFileName) {
-            return processFileName;
-        }
-
-        int i = this.fullFilePath.lastIndexOf(File.separator);
-
-        if(i == -1) {
-            throw new RuntimeException("路径配置错误， fullFilePath="+ this.fullFilePath);
-        }
-
-        this.processBaseDir = this.fullFilePath.substring(0, i);
-        this.processFileName = this.fullFilePath.substring(i);
-        return this.processBaseDir;
-    }
-
     public Long getId() {
         return id;
     }
