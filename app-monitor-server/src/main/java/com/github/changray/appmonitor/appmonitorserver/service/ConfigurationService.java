@@ -18,7 +18,7 @@ public class ConfigurationService {
 
 
     public List<AppInfo> getAllRemoteTask() {
-        List<AppInfo> taskInfos = appInfoDao.findAll2("", "");
+        List<AppInfo> taskInfos = appInfoDao.findAll2("", "", "");
         return taskInfos;
     }
 }

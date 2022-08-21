@@ -75,18 +75,19 @@ function createService () {
       // 你也可以不使用这种方法，改为在下面的 http 错误拦截器里做处理
 
       // 没有 code 视为非项目接口不作处理
+
       if (response.data.code === undefined) {
         return response.data
       }
-
       // 有 code 判断为项目接口请求
       switch (response.data.code) {
         // 返回响应内容
-        case 0: return response.data.data
+        case 0: return response.data
         // 例如在 code 401 情况下退回到登录页面
         case 401: throw new Error('请重新登录')
         // 根据需要添加其它判断
-        default: throw new Error(`${response.data.msg}: ${response.config.url}`)
+        // default: throw new Error(`${response.data.msg}: ${response.config.url}`)
+        default: return response.data
       }
     },
     error => {
@@ -128,7 +129,7 @@ function createRequest (service) {
         Authorization: token,
         'Content-Type': get(config, 'headers.Content-Type', 'application/json')
       },
-      timeout: 5000,
+      timeout: 15000,
       baseURL: process.env.VUE_APP_API,
       data: {}
     }

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class SystemInfoCMD extends BaseCommand<SystemInfoResut> {
     @Override
-    public SystemInfoResut getResult() {
+    public SystemInfoResut getResult(SYSTEM system) {
         this.result = new StringBuilder("top - 11:24:45 up 327 days, 14:08,  1 user,  load average: 0.36, 0.35, 0.28\n" +
                 "Threads: 439 total,   1 running, 438 sleeping,   0 stopped,   0 zombie\n" +
                 "%Cpu(s):  2.9 us,  5.7 sy,  0.0 ni, 88.6 id,  0.0 wa,  0.0 hi,  2.9 si,  0.0 st\n" +
@@ -23,7 +23,7 @@ public class SystemInfoCMD extends BaseCommand<SystemInfoResut> {
 
 
         SystemInfoResut res = new SystemInfoResut();
-        if(this.getSystem() == SYSTEM.LINUX) {
+        if(system == SYSTEM.LINUX) {
             String[] lines = this.result.toString().split("\n");
 
             for (int i = 0; i < lines.length; i++) {
@@ -63,8 +63,8 @@ public class SystemInfoCMD extends BaseCommand<SystemInfoResut> {
     }
 
     @Override
-    public String getCommand() {
-        switch (getSystem()) {
+    public String getCommand(SYSTEM system) {
+        switch (system) {
             case LINUX:
                 return "top -H -n 1 |  head -5";
             case WINDOWS:

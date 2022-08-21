@@ -41,8 +41,10 @@ public class AppInfoController {
     }
 
     @RequestMapping("/list")
-    public BaseResult<PaginationDTO<AppInfo>> list(@RequestParam("group") String group, @RequestParam("keyword") String keyword) {
-        List<AppInfo> all = appInfoDao.findAll2(keyword, group);
+    public BaseResult<PaginationDTO<AppInfo>> list(@RequestParam(value = "group", required = false) String group,
+                                                   @RequestParam(value ="keyword", required = false) String keyword,
+                                                   @RequestParam(value ="serverIp", required = false) String serverIp) {
+        List<AppInfo> all = appInfoDao.findAll2(keyword, group, serverIp);
         return BaseResult.page(all);
     }
 

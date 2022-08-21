@@ -7,6 +7,8 @@
         :data="data"
         :rowHandle="rowHandle"
         add-title="添加服务器"
+        :add-rules="addRules"
+        :edit-rules="addRules"
         :add-template="addTemplate"
         :form-options="formOptions"
         :pagination="pagination"
@@ -27,11 +29,19 @@
 </template>
 
 <script>
+  import serverSSHTest from '@/views/console/component/serverSshTest.vue'
+
   import * as monitorApi from '@/api/monitorApi.js'
 
   export default {
+    components: {
+      serverSSHTest
+    },
     data () {
       return {
+        addRules: {
+          ip: [{ required: true, message: '必填', trigger: 'blur' }],
+        },
         query: {
           remark: ''
         },
@@ -192,16 +202,27 @@
         this.formOptions.saveLoading = true
         let self = this;
 
-        monitorApi.CLIENT_INFO_EDIT(row).then(res => {
-          self.$message({
-            message: '修改成功',
-            type: 'success'
-          });
-          self.formOptions.saveLoading = false
-          self.fetchData();
-          done()
-        })
 
+        monitorApi.SERVER_SSH_TEST(row).then(res => {
+
+          if(res.code == 0) {
+            monitorApi.CLIENT_INFO_EDIT(row).then(res => {
+              self.$message({
+                message: '修改成功',
+                type: 'success'
+              });
+              self.formOptions.saveLoading = false
+              self.fetchData();
+              done()
+            })
+          } else {
+            self.$message({
+              message: 'SSH链接测试失败,' + res.msg ,
+              type: 'error'
+            });
+            self.formOptions.saveLoading = false
+          }
+        });
 
       },
       handleRowRemove ({ index, row }, done) {
@@ -222,15 +243,29 @@
         this.formOptions.saveLoading = true
         let self = this;
 
-        monitorApi.CLIENT_INFO_ADD(row).then(res => {
-          self.$message({
-            message: '保存成功',
-            type: 'success'
-          });
-          self.formOptions.saveLoading = false
-          self.fetchData();
-          done()
+        monitorApi.SERVER_SSH_TEST(row).then(res => {
+
+          if(res.code == 0) {
+            monitorApi.CLIENT_INFO_ADD(row).then(res => {
+              self.$message({
+                message: '保存成功',
+                type: 'success'
+              });
+              self.formOptions.saveLoading = false
+              self.fetchData();
+              done()
+            })
+          } else {
+            self.$message({
+              message: 'SSH链接测试失败,' + res.msg ,
+              type: 'error'
+            });
+            this.formOptions.saveLoading = false
+          }
+
         })
+
+
 
 
       },
@@ -250,7 +285,8 @@
         this.loading = true
 
         monitorApi.CLIENT_INFO_LIST({remark: this.query.remark}).then(res => {
-          this.data = res.list
+
+          this.data = res.data.list
           this.data.forEach(tmp => {
               tmp.showRemoveButton= true;
               tmp.showEditButton = true;

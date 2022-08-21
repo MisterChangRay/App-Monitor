@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class IdleCMD extends BaseCommand<SystemInfoResut> {
     @Override
-    public SystemInfoResut getResult() {
+    public SystemInfoResut getResult(SYSTEM system) {
         this.result = new StringBuilder("top - 11:24:45 up 327 days, 14:08,  1 user,  load average: 0.36, 0.35, 0.28\n" +
                 "Threads: 439 total,   1 running, 438 sleeping,   0 stopped,   0 zombie\n" +
                 "%Cpu(s):  2.9 us,  5.7 sy,  0.0 ni, 88.6 id,  0.0 wa,  0.0 hi,  2.9 si,  0.0 st\n" +
@@ -65,8 +65,8 @@ public class IdleCMD extends BaseCommand<SystemInfoResut> {
     }
 
     @Override
-    public String getCommand() {
-        switch (getSystem()) {
+    public String getCommand(SYSTEM system) {
+        switch (system) {
             case LINUX:
                 return "pwd";
             case WINDOWS:

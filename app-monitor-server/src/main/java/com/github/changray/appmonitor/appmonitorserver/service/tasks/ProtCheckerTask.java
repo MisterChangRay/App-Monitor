@@ -10,6 +10,7 @@ import com.github.misterchangra.appmonitor.base.command.result.FindInProcessCMDR
 import com.sun.xml.bind.v2.schemagen.xmlschema.Appinfo;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProtCheckerTask extends CheckerTask {
 
@@ -19,22 +20,27 @@ public class ProtCheckerTask extends CheckerTask {
     }
 
     @Override
-    public boolean check() {
+    public FindInProcessCMDResult check() {
 
         FindInProcessByPortCMD cmd = new FindInProcessByPortCMD();
 
         SSHExecuteInfo sshExecuteInfo = new SSHExecuteInfo();
-        sshExecuteInfo.setCommand(cmd.getCommand());
+
+        String port = this.appInfo.getPort();
+        if(this.appInfo.getPort().contains(",")) {
+            port = this.appInfo.getPort().split(",")[0];
+        }
+        sshExecuteInfo.setCommand(String.format(cmd.getCommand(appInfo.getSystemType()), port));
         SSHExecuteInfo execute = sshClientService.execute(sshExecuteInfo);
         if(execute.isSuccess()) {
             cmd.setResult(new StringBuilder(sshExecuteInfo.getResult()));
         }
 
-        List<FindInProcessCMDResult> result = cmd.getResult();
-        if(result.size() > 0) {
-            return true;
+        List<FindInProcessCMDResult> result = cmd.getResult(appInfo.getSystemType());
+        if(Objects.nonNull(result) && result.size() > 0) {
+            return result.get(0);
         }
 
-        return false;
+        return null;
     }
 }

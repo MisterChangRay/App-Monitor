@@ -5,6 +5,7 @@ import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.github.changray.appmonitor.appmonitorserver.service.CheckerTask;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHExecuteInfo;
+import com.github.misterchangra.appmonitor.base.command.BaseCommand;
 import com.github.misterchangra.appmonitor.base.command.FindInProcessByPortCMD;
 import com.github.misterchangra.appmonitor.base.command.FindInProcessCMD;
 import com.github.misterchangra.appmonitor.base.command.result.FindInProcessCMDResult;
@@ -20,21 +21,21 @@ public class FileNameCheckerTask extends CheckerTask {
     }
 
     @Override
-    public boolean check() {
+    public FindInProcessCMDResult check() {
         FindInProcessCMD cmd = new FindInProcessCMD();
 
         SSHExecuteInfo sshExecuteInfo = new SSHExecuteInfo();
-        sshExecuteInfo.setCommand(cmd.getCommand());
+        sshExecuteInfo.setCommand(String.format(cmd.getCommand(appInfo.getSystemType()), appInfo.getDeployFile()));
         SSHExecuteInfo execute = sshClientService.execute(sshExecuteInfo);
         if(execute.isSuccess()) {
             cmd.setResult(new StringBuilder(sshExecuteInfo.getResult()));
         }
 
-        List<FindInProcessCMDResult> result = cmd.getResult();
+        List<FindInProcessCMDResult> result = cmd.getResult(appInfo.getSystemType());
         if(result.size() > 0) {
-            return true;
+            return result.get(0);
         }
 
-        return false;
+        return null;
     }
 }

@@ -13,8 +13,8 @@ public class FindInProcessByPortCMD extends BaseCommand<List<FindInProcessCMDRes
 
 
     @Override
-    public List<FindInProcessCMDResult> getResult() {
-        if(this.result == null) {
+    public List<FindInProcessCMDResult> getResult(SYSTEM system) {
+        if(this.result == null || this.result.toString().equals( "")) {
             return null;
         }
 
@@ -22,12 +22,12 @@ public class FindInProcessByPortCMD extends BaseCommand<List<FindInProcessCMDRes
         String[] split = this.result.toString().split("\n");
         for (String s : split) {
             String[] split1 = s.split("\\s+");
-            switch (this.getSystem()) {
+            switch (system) {
                 case WINDOWS:
                     res.add(new FindInProcessCMDResult(split1[0], split1[1], split1[4]));
                     break;
                 case LINUX:
-                    res.add(new FindInProcessCMDResult(split1[10], split1[1], split1[4]));
+                    res.add(new FindInProcessCMDResult(null, split1[6].split("/")[0], null));
                     break;
             }
 
@@ -37,8 +37,8 @@ public class FindInProcessByPortCMD extends BaseCommand<List<FindInProcessCMDRes
     }
 
     @Override
-    public String getCommand() {
-        switch (getSystem()) {
+    public String getCommand(SYSTEM system) {
+        switch (system) {
             case LINUX:
                 return "netstat -ntpl | grep %s";
             case WINDOWS:

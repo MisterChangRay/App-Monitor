@@ -5,14 +5,16 @@ import com.github.changray.appmonitor.appmonitorserver.dao.ServerInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.AppInfo;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.github.changray.appmonitor.appmonitorserver.events.ProtectProcessBySSHEvent;
-import com.github.changray.appmonitor.appmonitorserver.events.RefreshAppInfo;
+import com.github.changray.appmonitor.appmonitorserver.events.RefreshAppInfoEvent;
 import com.github.changray.appmonitor.appmonitorserver.service.CheckerTask;
 import com.github.changray.appmonitor.appmonitorserver.service.ConfigurationService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConfig;
+import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHExecuteInfo;
 import com.github.changray.appmonitor.appmonitorserver.service.tasks.CustomCheckerTask;
 import com.github.changray.appmonitor.appmonitorserver.service.tasks.FileNameCheckerTask;
 import com.github.changray.appmonitor.appmonitorserver.service.tasks.ProtCheckerTask;
+import com.github.misterchangra.appmonitor.base.command.result.FindInProcessCMDResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 
@@ -52,7 +55,7 @@ public class ProcessProtectListener {
 
 
 
-    @EventListener(value = {RefreshAppInfo.class})
+    @PostConstruct()
     public void refreshAppInfo() {
         refreshServerInfo();
         List<AppInfo> all = appInfoDao.findAll();
@@ -103,6 +106,7 @@ public class ProcessProtectListener {
         sshClientServices.put(sshConfig.getHost(), new SSHClientService(sshConfig));
     }
 
+
     @EventListener(value = {ProtectProcessBySSHEvent.class})
     public void start() {
 
@@ -123,7 +127,6 @@ public class ProcessProtectListener {
 
 
             CheckerTask checkerTask= null;
-            boolean running = true;
             switch (processInfo.getScanType()) {
                 //  1. 通过端口监听
                 //  2. 通过文件名来检测
@@ -139,14 +142,38 @@ public class ProcessProtectListener {
                     break;
             }
 
-            running = checkerTask.check();
-            if(running) {
+            FindInProcessCMDResult check = checkerTask.check();
+
+            refreshAppData(processInfo, check);
+
+            if(Objects.nonNull(check)) {
+                // 非空则表示进程存在
                 continue;
             }
-            logger.info("检测到进程已结束, 启动进程 fullPath: {}", processInfo.getFullFilePath());
+            logger.info("检测到进程已结束, 启动进程 path: {}, name: {}", processInfo.getDeployPath(), processInfo.getDeployFile());
             checkerTask.start();
 
         }
+    }
+
+    /**
+     * 更新应用状态
+     * @param processInfo
+     * @param check
+     */
+    private void refreshAppData(AppInfo processInfo, FindInProcessCMDResult check) {
+
+        Optional<AppInfo> byId = appInfoDao.findById(processInfo.getId());
+        AppInfo appInfo = byId.get();
+        if(check == null) {
+            appInfo.setStatus(3);
+        } else {
+            appInfo.setStatus(1);
+            appInfo.setProcessId(check.getPid());
+            appInfo.setUpdateTime(new Date());
+        }
+
+        appInfoDao.saveAndFlush(appInfo);
     }
 
 }

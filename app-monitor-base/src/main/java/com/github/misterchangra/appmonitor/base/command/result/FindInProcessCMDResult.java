@@ -1,6 +1,6 @@
 package com.github.misterchangra.appmonitor.base.command.result;
 
-public class FindInProcessCMDResult {
+public class FindInProcessCMDResult extends BaseCMDResult{
     private String name;
     private String pid;
     private String memUseKB;
@@ -9,6 +9,10 @@ public class FindInProcessCMDResult {
         this.name = name;
         this.pid = pid;
         this.memUseKB = memUse;
+    }
+
+    public FindInProcessCMDResult() {
+
     }
 
     public String getName() {

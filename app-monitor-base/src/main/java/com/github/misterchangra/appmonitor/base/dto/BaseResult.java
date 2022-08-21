@@ -6,6 +6,12 @@ public class BaseResult<T> {
     private int code;
     private T data;
     private String sign;
+    private String msg;
+
+
+    public static BaseResult fail(int code, String msg) {
+        return new BaseResult(code, msg);
+    }
 
     public String getSign() {
         return sign;
@@ -59,12 +65,20 @@ public class BaseResult<T> {
     public BaseResult(int code) {
         this.code = code;
     }
-    public BaseResult() {
-
+    public BaseResult(int code, String msg) {
+            this.code = code;
+            this.msg = msg;
     }
 
     public static BaseResult success() {
         return new BaseResult(0);
     }
 
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
 }

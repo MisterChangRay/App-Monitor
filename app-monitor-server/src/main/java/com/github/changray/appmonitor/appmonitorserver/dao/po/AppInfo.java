@@ -19,10 +19,16 @@ public class AppInfo {
     private String projectName;
 
     /**
-     * 文件全路径, 包含路径+文件名称
+     * 部署文件名
      */
-    @Column(name="full_file_path")
-    private String fullFilePath;
+    @Column(name="deploy_file")
+    private String deployFile;
+
+    /**
+     * 部署路径
+     */
+    @Column(name="deploy_path")
+    private String deployPath;
 
     /**
      * 项目使用端口,多个逗号分开
@@ -33,6 +39,11 @@ public class AppInfo {
     @Column(name="remark")
     private String remark;
 
+    /**
+     * 0 未激活
+     * 1 运行中
+     * 2 已离线
+     */
     @Column(name="status")
     private int status;
 
@@ -58,6 +69,10 @@ public class AppInfo {
     @Column(name="last_start_time")
     private Date lastStartTime;
 
+    // 操作系统类型 0 linux 1 win
+    @Column(name="system_type")
+    private int systemType;
+
     /**
      * 应用连接方式
      *
@@ -79,6 +94,29 @@ public class AppInfo {
     @Column(name="scan_type")
     private int scanType;
 
+    public int getSystemType() {
+        return systemType;
+    }
+
+    public void setSystemType(int systemType) {
+        this.systemType = systemType;
+    }
+
+    public String getDeployFile() {
+        return deployFile;
+    }
+
+    public void setDeployFile(String deployFile) {
+        this.deployFile = deployFile;
+    }
+
+    public String getDeployPath() {
+        return deployPath;
+    }
+
+    public void setDeployPath(String deployPath) {
+        this.deployPath = deployPath;
+    }
 
     public String getTestCmd() {
         return testCmd;
@@ -128,13 +166,7 @@ public class AppInfo {
         this.projectName = projectName;
     }
 
-    public String getFullFilePath() {
-        return fullFilePath;
-    }
 
-    public void setFullFilePath(String fullFilePath) {
-        this.fullFilePath = fullFilePath;
-    }
 
     public String getPort() {
         return port;

@@ -13,13 +13,35 @@ public abstract class BaseCommand<T> {
         WINDOWS, LINUX
     }
 
-    public abstract T getResult();
+    public T getResult(int type) {
+        if(1 == type) {
+            return  this.getResult(SYSTEM.WINDOWS);
+        }
+        return this.getResult(SYSTEM.LINUX);
+    }
+
+    public T getResult() {
+        return getResult(getSystem());
+    }
+
+    public abstract T getResult(SYSTEM system);
 
     public void setResult(StringBuilder result) {
         this.result = result;
     }
 
-    public abstract String getCommand();
+    public abstract String getCommand(SYSTEM system);
+
+    public String getCommand() {
+        return this.getCommand(this.getSystem());
+    }
+
+    public String getCommand(int type) {
+        if(1 == type) {
+            return  this.getCommand(SYSTEM.WINDOWS);
+        }
+       return this.getCommand(SYSTEM.LINUX);
+    }
 
     public  BaseCommand<T> execCmd(String... param) {
         String cmd = this.getCommand();

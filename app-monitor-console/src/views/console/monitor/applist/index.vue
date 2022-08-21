@@ -7,6 +7,8 @@
         :data="data"
         :rowHandle="rowHandle"
         add-title="添加应用"
+        :add-rules="addRules"
+        :edit-rules="addRules"
         :add-template="addTemplate"
         :form-options="formOptions"
         :pagination="pagination"
@@ -25,6 +27,14 @@
         <el-select slot="header" v-model="query.group" clearable filterable placeholder="应用分组">
           <el-option
             v-for="item in groupOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-select slot="header" v-model="query.serverIp" clearable filterable placeholder="服务器">
+          <el-option
+            v-for="item in SERVER_LIST"
             :key="item.value"
             :label="item.label"
             :value="item.value">
@@ -49,8 +59,10 @@
 
         <el-descriptions-item label="备注" span="3">{{ detailRow.remark }}</el-descriptions-item>
         <el-descriptions-item label="测试链接" span="3">{{ detailRow.testUrl }}</el-descriptions-item>
+
         <el-descriptions-item label="应用启动命令" span="3">{{ detailRow.startCmd }}</el-descriptions-item>
-        <el-descriptions-item label="应用部署全路径" span="3">{{ detailRow.fullFilePath }}</el-descriptions-item>
+        <el-descriptions-item label="应用部署路径" span="3">{{ detailRow.deployPath }}</el-descriptions-item>
+        <el-descriptions-item label="应用部署文件名" span="3">{{ detailRow.deployFile }}</el-descriptions-item>
         <el-descriptions-item label="应用进程ID" span="3">{{detailRow.processId }}</el-descriptions-item>
 
         <el-descriptions-item label="创建时间">{{ columnDateFormatter(1,1,detailRow.createTime) }}</el-descriptions-item>
@@ -69,12 +81,18 @@
     data () {
       return {
         CLIENT_INFO_LIST : [],
+        SERVER_LIST : [],
         detailRow: {},
         detailDialogVisible: false,
         groupOptions: [],
         query: {
           keyword: '',
-          group:''
+          group:'',
+          serverIp: ''
+        },
+        addRules: {
+          projectName: [{ required: true, message: '必填', trigger: 'blur' }],
+          serverIp: [{ required: true, message: '必填', trigger: 'blur' }],
         },
         rowHandle: {
           edit: {
@@ -131,19 +149,20 @@
             width: '100'
           },
           {
-            title: '状态',
-            key: 'status',
-            formatter: this.statusFormatter,
-            width: '80'
-          },
-          {
-            title: '部署路径',
-            key: 'fullFilePath',
+            title: '进程ID',
+            key: 'processId',
+            width: '80',
           },
           {
             title: '使用端口',
             key: 'port',
             width: '100'
+          },
+          {
+            title: '状态',
+            key: 'status',
+            formatter: this.statusFormatter,
+            width: '80'
           },
           {
             title: '服务器',
@@ -152,8 +171,12 @@
             formatter: this.columnIPFormatter
           },
           {
+            title: '部署文件',
+            key: 'deployFile',
+          },
+          {
             title: '最新一次通讯',
-            key: 'reportTime',
+            key: 'updateTime',
             formatter: this.columnDateFormatter
           }
         ],
@@ -228,7 +251,7 @@
             value: '',
             component: {
               span: 11,
-              placeholder: "必填,多个逗号分隔;如:7512,7513"
+              placeholder: "可选,通过端口检测必填,多个逗号分隔;如:7512,7513"
             }
           },
           remark: {
@@ -239,34 +262,51 @@
             }
           },
           autoRestart: {
-            title: '自动重启',
+            title: '启动方式',
+            value: 1,
             component: {
-              activeValue: 1,
-              inactiveValue: 0,
-              name: 'el-switch',
+              name: 'el-select',
+              options: [
+                {
+                  label: "自动重启(停止后立即重启)",
+                  value: 1
+                },
+                {
+                  label: "开机启动(仅开机启动一次)",
+                  value: 2
+                }],
               span: 11,
               placeholder: "请选择"
+            }
+          },
+          deployPath: {
+            title: '部署路径',
+            value: '',
+            component: {
+              span: 11,
+              placeholder: "可选, 通过文件名检测必填; ; 如: /user/local/service/"
+            }
+          },
+          deployFile: {
+            title: '部署文件名',
+            value: '',
+            component: {
+              span: 11,
+              placeholder: "可选, 通过文件名检测必填; 如: xxx.jar"
             }
           },
           testCmd: {
             title: '应用测试命令',
             value: '',
             component: {
-              placeholder: "可选,通过此Shell命令测试应用存活状态,命令需要返回0或1;1代表存活"
+              placeholder: "可选,通过此Shell命令测试应用存活状态,命令需要返回TRUE或FALSE;TRUE代表存活"
             }
           },
           startCmd: {
             title: '应用启动命令',
             value: '',
             component: {
-              placeholder: "必填,启动所使用的Shell命令; 如: java -jar /usr/local/service/xxx.jar 或者 ./startup.sh"
-            }
-          },
-          fullFilePath: {
-            title: '部署全路径',
-            value: '',
-            component: {
-              placeholder: "必填,应用部署全路径+文件名; 如: /user/local/service/xxx.jar"
+              placeholder: "必填,启动使用的Shell命令,最好和路径无关; 如: java -jar /usr/local/service/xxx.jar 或者 ./startup.sh"
             }
           },
 
@@ -274,7 +314,7 @@
         formOptions: {
           labelWidth: '110px',
           labelPosition: 'left',
-          gutter: 50,
+          gutter: 30,
           saveLoading: false
         },
         loading: false,
@@ -290,6 +330,15 @@
       this.fetchData()
     },
     methods: {
+      statusFormatter (row, column, cellValue, index) {
+        if(cellValue == '0') {
+          return "未激活"
+        }
+        if(cellValue == '1') {
+            return "在线"
+        }
+        return "离线"
+      },
       columnIPFormatter (row, column, cellValue, index) {
         if(cellValue) {
           for (let i in this.CLIENT_INFO_LIST) {
@@ -311,7 +360,7 @@
         let self = this;
         monitorApi.APP_INFO_GROUP_LIST({}).then(res => {
           self.groupOptions = [];
-          res.list.forEach(tmp => {
+          res.data.list.forEach(tmp => {
 
             self.groupOptions.push({
               label: tmp,
@@ -323,16 +372,16 @@
         monitorApi.CLIENT_INFO_LIST({remark: ''}).then(res => {
           self.addTemplate.serverIp.component.options =[]
 
-          res.list.forEach(tmp => {
+          res.data.list.forEach(tmp => {
 
             let t2 = {
               label: self.formatSelectLabel(tmp),
               value: tmp.ip
             };
-            console.log(t2)
+            self.SERVER_LIST.push(t2)
             self.addTemplate.serverIp.component.options.push(t2)
           })
-          self.CLIENT_INFO_LIST = res.list;
+          self.CLIENT_INFO_LIST = res.data.list;
         })
       },
       formatSelectLabel(item) {
@@ -349,17 +398,6 @@
           return diff > min10 ? false : true;
         }
         return false;
-      },
-      statusFormatter (row, column, cellValue, index) {
-        if(cellValue == '1') {
-          return "未激活"
-        }
-        if(cellValue == '2') {
-          if(row.reportTime ) {
-            return  this.isOnline(row.reportTime) ? "在线" : "离线"
-          }
-        }
-        return "未知"
       },
       handleDialogOpen ({ mode }) {
 
@@ -433,7 +471,7 @@
         this.loading = true
 
         monitorApi.APP_INFO_LIST(this.query).then(res => {
-          this.data = res.list
+          this.data = res.data.list
           this.data.forEach(tmp => {
             tmp.showRemoveButton= true;
             tmp.showEditButton = true;

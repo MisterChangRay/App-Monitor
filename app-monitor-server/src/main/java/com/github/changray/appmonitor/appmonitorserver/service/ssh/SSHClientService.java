@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 public class SSHClientService {
     static Logger logger = LoggerFactory.getLogger(SSHClientService.class.getName());
 
-    SSHConfig sshConfig;
+
     //创建一个ssh通讯核心类
     JSch jSch = new JSch();
     SSHSessionContext sessionContext;
@@ -32,11 +32,13 @@ public class SSHClientService {
         Future<SSHExecuteInfo> exec = es1.submit(new Callable<SSHExecuteInfo>() {
             @Override
             public SSHExecuteInfo call() throws Exception {
-                SSHConnectInfo test = test(sshExecuteInfo);
-                if (!test.isSuccess()) {
-                    sshExecuteInfo.setSuccess(false);
-                    sshExecuteInfo.setDesc(test.getDesc());
-                    return sshExecuteInfo;
+                if(null == sessionContext) {
+                    SSHConnectInfo test = test(sshExecuteInfo);
+                    if (!test.isSuccess()) {
+                        sshExecuteInfo.setSuccess(false);
+                        sshExecuteInfo.setDesc(test.getDesc());
+                        return sshExecuteInfo;
+                    }
                 }
 
                 Session session = sessionContext.getSession();
@@ -50,6 +52,7 @@ public class SSHClientService {
 
                 try {
                     ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
+
                     channelExec.setCommand(sshExecuteInfo.getCommand());
                     channelExec.connect();
                     InputStream inputStream = channelExec.getInputStream();
@@ -83,12 +86,18 @@ public class SSHClientService {
         return sshExecuteInfos;
     }
 
+
     public SSHConnectInfo test(SSHConfig sshConfig) {
         SSHConnectInfo sshConnectInfo = new SSHConnectInfo();
         BeanUtils.copyProperties(sshConfig, sshConnectInfo);
         try {
+            java.util.Properties config = new java.util.Properties();
+            config.put("StrictHostKeyChecking", "no");
+
             Session sessiont = jSch.getSession(sshConfig.getUsername(), sshConfig.getHost(), sshConfig.getPort());
             sessiont.setPassword(sshConfig.getPassword());
+            sessiont.setTimeout(4000);
+            sessiont.setConfig(config);
             sessiont.connect();
             sshConnectInfo.setSuccess(true);
 
@@ -98,14 +107,17 @@ public class SSHClientService {
             sessionContext = sshSessionContext;
         } catch (JSchException e) {
             sshConnectInfo.setSuccess(false);
-            sshConnectInfo.setDesc(e.toString());
+            sshConnectInfo.setDesc(e.getMessage());
         }
         return sshConnectInfo;
     }
 
 
+    public SSHClientService() {
+    }
+
     public SSHClientService(SSHConfig sshConfig) {
-        this.sshConfig = sshConfig;
+        test(sshConfig);
     }
 
 

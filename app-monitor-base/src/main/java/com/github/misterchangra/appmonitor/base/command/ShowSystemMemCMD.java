@@ -12,7 +12,7 @@ public class ShowSystemMemCMD extends BaseCommand<List<FindInProcessCMDResult>> 
 
 
     @Override
-    public List<FindInProcessCMDResult> getResult() {
+    public List<FindInProcessCMDResult> getResult(SYSTEM system) {
         if(this.result == null) {
             return null;
         }
@@ -21,7 +21,7 @@ public class ShowSystemMemCMD extends BaseCommand<List<FindInProcessCMDResult>> 
         String[] split = this.result.toString().split("\n");
         for (String s : split) {
             String[] split1 = s.split("\\s+");
-            switch (this.getSystem()) {
+            switch (system) {
                 case WINDOWS:
                     res.add(new FindInProcessCMDResult(split1[0], split1[1], split1[4]));
                     break;
@@ -36,8 +36,8 @@ public class ShowSystemMemCMD extends BaseCommand<List<FindInProcessCMDResult>> 
     }
 
     @Override
-    public String getCommand() {
-        switch (getSystem()) {
+    public String getCommand(SYSTEM system) {
+        switch (system) {
             case LINUX:
                 return "ps -aux | grep %s";
             case WINDOWS:

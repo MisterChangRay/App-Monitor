@@ -5,6 +5,18 @@ import * as tools from '@/api/_tools.js'
 
 
 /**
+ * @description ssh测试
+ */
+export function SERVER_SSH_TEST (param) {
+  return request({
+    url: '/server/ssh/test',
+    method: 'post',
+    data: param
+  })
+}
+
+
+/**
  * @description 列表
  */
 export function CLIENT_INFO_LIST (param) {
