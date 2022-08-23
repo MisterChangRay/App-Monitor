@@ -31,8 +31,8 @@ import java.util.*;
  * 这里主要是使用远程SSH 方式进行进程保护
  */
 @Service
-public class ProcessProtectListener {
-    static Logger logger = LoggerFactory.getLogger(ProcessProtectListener.class.getName());
+public class CollectRemoteSystemInfoListener {
+    static Logger logger = LoggerFactory.getLogger(CollectRemoteSystemInfoListener.class.getName());
     // ip, serverInfo
     private Map<String, ServerInfo> serverCache = new HashMap<String, ServerInfo>();
     private Map<String, SSHClientService> sshClientServices = new HashMap<>();

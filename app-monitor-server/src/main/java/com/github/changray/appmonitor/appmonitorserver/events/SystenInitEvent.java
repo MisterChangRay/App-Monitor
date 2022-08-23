@@ -4,10 +4,8 @@ import org.springframework.context.ApplicationEvent;
 
 import java.util.Objects;
 
-public class RefreshAppInfoEvent extends ApplicationEvent {
-    private String ip;
-    public RefreshAppInfoEvent(String ip, Object source) {
+public class SystenInitEvent extends ApplicationEvent {
+    public SystenInitEvent(Object source) {
         super(source);
-        this.ip = ip;
     }
 }
