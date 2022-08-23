@@ -137,6 +137,7 @@
             title: 'SSH密码',
             value: '',
             component: {
+              showPassword:true,
               span: 11,
               placeholder: "使用SSH启动必填"
             }

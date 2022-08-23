@@ -94,6 +94,17 @@ public class AppInfo {
     @Column(name="scan_type")
     private int scanType;
 
+    @Column(name="ext")
+    private String ext;
+
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
+    }
+
     public int getSystemType() {
         return systemType;
     }

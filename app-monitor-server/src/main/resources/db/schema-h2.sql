@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS  app_info (
   update_time TIMESTAMP DEFAULT NULL,
   last_start_time TIMESTAMP DEFAULT NULL,
   comm_type int DEFAULT 0,
-  scan_type int DEFAULT 0
+  scan_type int DEFAULT 0,
+  ext varchar(4096) default  null
 ) ;
 
 
@@ -33,5 +34,6 @@ CREATE TABLE IF NOT EXISTS  server_info (
   status int DEFAULT NULL,
   create_time timestamp DEFAULT NULL,
   update_time timestamp DEFAULT NULL,
-  report_time timestamp DEFAULT NULL
+  report_time timestamp DEFAULT NULL,
+  ext varchar(4096) default  null
 ) ;

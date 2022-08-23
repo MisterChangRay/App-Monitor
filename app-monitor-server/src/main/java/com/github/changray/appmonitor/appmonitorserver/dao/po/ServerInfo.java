@@ -27,6 +27,17 @@ public class ServerInfo {
     private Date updateTime;
     @Column(name="report_time")
     private Date reportTime;
+    @Column(name="ext")
+    private Date ext;
+
+
+    public Date getExt() {
+        return ext;
+    }
+
+    public void setExt(Date ext) {
+        this.ext = ext;
+    }
 
     public Long getId() {
         return id;
