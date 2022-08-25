@@ -2,6 +2,7 @@ package com.github.changray.appmonitor.appmonitorserver.controller.monitor;
 
 import com.github.changray.appmonitor.appmonitorserver.dao.ServerInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
+import com.github.changray.appmonitor.appmonitorserver.service.EventsService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConfig;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConnectInfo;
@@ -34,6 +35,8 @@ import java.util.Objects;
 public class ServerController {
     @Autowired
     private ServerInfoDao serverInfoDao;
+    @Autowired
+    private EventsService eventsService;
 
     @RequestMapping("/ssh/test")
     public BaseResult<PaginationDTO<ServerInfo>> sshtest(@RequestBody ServerInfo serverInfo) {
@@ -61,6 +64,7 @@ public class ServerController {
         serverInfo.setCreateTime(Timestamp.from(Instant.now()));
         serverInfo.setUpdateTime(new Date());
         serverInfoDao.save(serverInfo);
+        eventsService.publishConfigChangeEvent();
         return BaseResult.success();
     }
 
@@ -68,12 +72,14 @@ public class ServerController {
     public BaseResult edit(@RequestBody ServerInfo serverInfo) {
         serverInfo.setUpdateTime(new Date());
         serverInfoDao.save(serverInfo);
+        eventsService.publishConfigChangeEvent();
         return BaseResult.success();
     }
 
     @RequestMapping("/del")
     public BaseResult del(@RequestBody ServerInfo serverInfo) {
         serverInfoDao.delete(serverInfo);
+        eventsService.publishConfigChangeEvent();
         return BaseResult.success();
     }
 

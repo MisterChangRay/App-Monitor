@@ -4,9 +4,13 @@ import com.github.changray.appmonitor.appmonitorserver.dao.AppInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.ServerInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.AppInfo;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
+import com.github.changray.appmonitor.appmonitorserver.events.ConfigChangedEvent;
+import com.github.changray.appmonitor.appmonitorserver.events.SystenInitEvent;
+import com.github.changray.appmonitor.appmonitorserver.service.EventsService;
 import com.github.misterchangra.appmonitor.base.dto.BaseResult;
 import com.github.misterchangra.appmonitor.base.dto.PaginationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +32,8 @@ import java.util.List;
 public class AppInfoController {
     @Autowired
     private AppInfoDao appInfoDao;
+    @Autowired
+    private EventsService eventsService;
 
 
     /**
@@ -54,6 +60,8 @@ public class AppInfoController {
         appInfo.setCreateTime(Timestamp.from(Instant.now()));
         appInfo.setUpdateTime(new Date());
         appInfoDao.save(appInfo);
+
+        eventsService.publishConfigChangeEvent();
         return BaseResult.success();
     }
 
@@ -61,12 +69,15 @@ public class AppInfoController {
     public BaseResult edit(@RequestBody AppInfo appInfo) {
         appInfo.setUpdateTime(new Date());
         appInfoDao.save(appInfo);
+
+        eventsService.publishConfigChangeEvent();
         return BaseResult.success();
     }
 
     @RequestMapping("/del")
     public BaseResult del(@RequestBody AppInfo appInfo) {
         appInfoDao.delete(appInfo);
+        eventsService.publishConfigChangeEvent();
         return BaseResult.success();
     }
 

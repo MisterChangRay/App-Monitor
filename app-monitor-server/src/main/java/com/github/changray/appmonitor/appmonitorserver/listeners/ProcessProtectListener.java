@@ -4,8 +4,10 @@ import com.github.changray.appmonitor.appmonitorserver.dao.AppInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.ServerInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.AppInfo;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
+import com.github.changray.appmonitor.appmonitorserver.events.ConfigChangedEvent;
 import com.github.changray.appmonitor.appmonitorserver.events.ProtectProcessBySSHEvent;
 import com.github.changray.appmonitor.appmonitorserver.service.CheckerTask;
+import com.github.changray.appmonitor.appmonitorserver.service.ClientServers;
 import com.github.changray.appmonitor.appmonitorserver.service.ConfigurationService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConfig;
@@ -33,82 +35,27 @@ import java.util.*;
 @Service
 public class ProcessProtectListener {
     static Logger logger = LoggerFactory.getLogger(ProcessProtectListener.class.getName());
-    // ip, serverInfo
-    private Map<String, ServerInfo> serverCache = new HashMap<String, ServerInfo>();
-    private Map<String, SSHClientService> sshClientServices = new HashMap<>();
 
-    @Value("global.config.ssh.username:")
-    private String globalUsername;
-    @Value("global.config.ssh.password:")
-    private String globalPassword;
-    @Value("global.config.ssh.port:")
-    private String globalPort;
 
+    @Autowired
+    private ClientServers clientServers;
     @Autowired
     private AppInfoDao appInfoDao;
-    @Autowired
-    private ServerInfoDao serverInfoDao;
+
     @Autowired
     private ConfigurationService configurationService;
+    List<AppInfo> allRemoteTask = null;
 
-
-
-    @PostConstruct()
-    public void refreshAppInfo() {
-        refreshServerInfo();
-        List<AppInfo> all = appInfoDao.findAll();
-        for (AppInfo appInfo : all) {
-            if(appInfo.getAutoRestart() == 0) {
-                // 未启用自动启动
-                continue;
-            }
-
-            if(0 == (appInfo.getCommType() & 0x2)) {
-                // 非指定通过通过 SSH 执行命令方式进行进程保护， 直接忽略
-                continue;
-            }
-
-            initAppInfo(appInfo);
-        }
+    @EventListener(value = {ConfigChangedEvent.class})
+    public void configChanges() {
+        this.allRemoteTask = null;
     }
-
-    private void refreshServerInfo() {
-        List<ServerInfo> all = serverInfoDao.findAll();
-        if(Objects.isNull(all)) {
-            return;
-        }
-
-        for (ServerInfo serverInfo : all) {
-            if(!StringUtils.hasLength(serverInfo.getPassword())) {
-                serverInfo.setPassword(globalPassword);
-            }
-            if(!StringUtils.hasLength(serverInfo.getUsername())) {
-                serverInfo.setUsername(globalUsername);
-            }
-            if(!StringUtils.hasLength(serverInfo.getPort())) {
-                serverInfo.setPort(globalPort);
-            }
-
-            serverCache.put(serverInfo.getIp(), serverInfo);
-        }
-    }
-
-    private void initAppInfo(AppInfo appInfo) {
-        ServerInfo serverInfo = serverCache.get(appInfo.getServerIp());
-        if(Objects.isNull(serverInfo)) {
-            return;
-        }
-
-        SSHConfig sshConfig = new SSHConfig(serverInfo.getUsername(), serverInfo.getPassword(),serverInfo.getIp(), Integer.valueOf(serverInfo.getPort()));
-
-        sshClientServices.put(sshConfig.getHost(), new SSHClientService(sshConfig));
-    }
-
 
     @EventListener(value = {ProtectProcessBySSHEvent.class})
     public void start() {
-
-        List<AppInfo> allRemoteTask = configurationService.getAllRemoteTask();
+        if(Objects.isNull(allRemoteTask) || allRemoteTask.size() == 0) {
+            allRemoteTask = configurationService.getAllRemoteTask();
+        }
 
         for (AppInfo processInfo : allRemoteTask) {
             if(processInfo.getAutoRestart() == 0) {
@@ -130,13 +77,16 @@ public class ProcessProtectListener {
                 //  2. 通过文件名来检测
                 //  3. 通过自定义命令检测
                 case 1:
-                    checkerTask = new ProtCheckerTask(processInfo, serverCache.get(processInfo.getServerIp()), sshClientServices.get(processInfo.getServerIp()));
+                    checkerTask = new ProtCheckerTask(processInfo, clientServers.getClientInfoByIp(processInfo.getServerIp()),
+                            clientServers.getSSHClientByIp(processInfo.getServerIp()));
                     break;
                 case 2:
-                    checkerTask = new FileNameCheckerTask(processInfo, serverCache.get(processInfo.getServerIp()), sshClientServices.get(processInfo.getServerIp()));
+                    checkerTask = new FileNameCheckerTask(processInfo, clientServers.getClientInfoByIp(processInfo.getServerIp()),
+                            clientServers.getSSHClientByIp(processInfo.getServerIp()));
                     break;
                 case 3:
-                    checkerTask = new CustomCheckerTask(processInfo, serverCache.get(processInfo.getServerIp()), sshClientServices.get(processInfo.getServerIp()));
+                    checkerTask = new CustomCheckerTask(processInfo, clientServers.getClientInfoByIp(processInfo.getServerIp()),
+                            clientServers.getSSHClientByIp(processInfo.getServerIp()));
                     break;
             }
 
