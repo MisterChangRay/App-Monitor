@@ -3,8 +3,7 @@ package com.github.changray.appmonitor.appmonitorserver.controller.monitor;
 import com.github.changray.appmonitor.appmonitorserver.dao.ServerInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.github.changray.appmonitor.appmonitorserver.service.EventsService;
-import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
-import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConfig;
+import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClient;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConnectInfo;
 import com.github.misterchangra.appmonitor.base.dto.BaseResult;
 import com.github.misterchangra.appmonitor.base.dto.PaginationDTO;
@@ -41,9 +40,8 @@ public class ServerController {
     @RequestMapping("/ssh/test")
     public BaseResult<PaginationDTO<ServerInfo>> sshtest(@RequestBody ServerInfo serverInfo) {
         if(Objects.nonNull(serverInfo) && StringUtils.hasLength(serverInfo.getUsername()) && StringUtils.hasLength(serverInfo.getPassword())) {
-            SSHConfig sshConfig = new SSHConfig(serverInfo.getUsername(), serverInfo.getPassword(), serverInfo.getIp(), Integer.valueOf(serverInfo.getPort()));
-            SSHClientService sshClientService = new SSHClientService();
-            SSHConnectInfo test = sshClientService.test(sshConfig);
+            SSHClient sshClient = new SSHClient();
+            SSHConnectInfo test = sshClient.test(serverInfo);
             if(test.isSuccess()) {
                 return BaseResult.success();
             }

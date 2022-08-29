@@ -1,8 +1,9 @@
 package com.github.changray.appmonitor.appmonitorserver.service.ssh.dto;
 
+import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.jcraft.jsch.Session;
 
-public class SSHConnectInfo extends SSHConfig {
+public class SSHConnectInfo extends ServerInfo {
     private boolean success;
     private String desc;
 

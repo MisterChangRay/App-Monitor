@@ -1,6 +1,8 @@
 package com.github.changray.appmonitor.appmonitorserver.service.ssh.dto;
 
-public class SSHExecuteInfo extends SSHConfig {
+import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
+
+public class SSHExecuteInfo extends ServerInfo {
     private String command;
     private boolean success;
     private String desc;

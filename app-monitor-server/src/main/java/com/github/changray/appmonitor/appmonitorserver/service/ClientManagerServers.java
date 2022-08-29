@@ -3,21 +3,17 @@ package com.github.changray.appmonitor.appmonitorserver.service;
 import com.github.changray.appmonitor.appmonitorserver.dao.ServerInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.github.changray.appmonitor.appmonitorserver.events.ConfigChangedEvent;
-import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
-import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConfig;
+import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
-public class ClientServers {
+public class ClientManagerServers {
     @Autowired
     private ServerInfoDao serverInfoDao;
     @Value("global.config.ssh.username:")
@@ -28,7 +24,7 @@ public class ClientServers {
     private String globalPort;
     // ip, serverInfo
     private Map<String, ServerInfo> serverCache = new HashMap<String, ServerInfo>();
-    private Map<String, SSHClientService> sshClientServices = new HashMap<>();
+    private Map<String, SSHClient> sshClientServices = new HashMap<>();
 
 
     @EventListener(value = {ConfigChangedEvent.class})
@@ -54,16 +50,37 @@ public class ClientServers {
                 serverInfo.setPort(globalPort);
             }
 
+
+            if(!StringUtils.hasLength(serverInfo.getUsername()) || !StringUtils.hasLength(serverInfo.getPassword())) {
+                continue;
+            }
             serverCache.put(serverInfo.getIp(), serverInfo);
         }
     }
 
-    public SSHClientService getSSHClientByIp(String ip) {
-        ServerInfo serverInfo = this.getClientInfoByIp(ip);
-        SSHConfig sshConfig = new SSHConfig(serverInfo.getUsername(), serverInfo.getPassword(),serverInfo.getIp(), Integer.valueOf(serverInfo.getPort()));
-        SSHClientService sshClientService = new SSHClientService(sshConfig);
-        sshClientServices.put(sshConfig.getHost(), sshClientService);
-        return sshClientService;
+
+    public List<SSHClient> getAllSSHClients() {
+        if(Objects.isNull(serverCache) || serverCache.size() == 0 ) {
+            refreshServerInfo();
+        }
+
+        List<SSHClient> res = new ArrayList<>();
+        for (String s : sshClientServices.keySet()) {
+            res.add(sshClientServices.get(s));
+        }
+        return res;
+    }
+
+    public SSHClient getSSHClientByIp(String ip) {
+        SSHClient sshClient = null;
+        if(!sshClientServices.containsKey(ip)) {
+            ServerInfo serverInfo = this.getClientInfoByIp(ip);
+            sshClient = new SSHClient(serverInfo);
+            sshClientServices.put(serverInfo.getIp(), sshClient);
+        } else {
+            sshClientServices.get(ip);
+        }
+        return sshClient;
     }
 
 

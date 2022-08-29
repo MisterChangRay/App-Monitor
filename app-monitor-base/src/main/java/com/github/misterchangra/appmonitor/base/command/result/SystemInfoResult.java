@@ -1,6 +1,8 @@
 package com.github.misterchangra.appmonitor.base.command.result;
 
-public class SystemInfoResut extends BaseCMDResult {
+import com.github.misterchangra.appmonitor.base.command.BaseCMDResult;
+
+public class SystemInfoResult extends BaseCMDResult {
     private String totalMemUse;
     private String totalMem;
     private String threads;

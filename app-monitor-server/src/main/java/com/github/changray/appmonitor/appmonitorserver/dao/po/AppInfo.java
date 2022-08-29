@@ -69,9 +69,6 @@ public class AppInfo {
     @Column(name="last_start_time")
     private Date lastStartTime;
 
-    // 操作系统类型 0 linux 1 win
-    @Column(name="system_type")
-    private int systemType;
 
     /**
      * 应用连接方式
@@ -103,14 +100,6 @@ public class AppInfo {
 
     public void setExt(String ext) {
         this.ext = ext;
-    }
-
-    public int getSystemType() {
-        return systemType;
-    }
-
-    public void setSystemType(int systemType) {
-        this.systemType = systemType;
     }
 
     public String getDeployFile() {

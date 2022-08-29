@@ -1,6 +1,7 @@
 package com.github.misterchangra.appmonitor.base.util;
 
-import com.github.misterchangra.appmonitor.base.command.FindInProcessCMD;
+import com.github.misterchangra.appmonitor.base.command.LocalCommandExecutor;
+import com.github.misterchangra.appmonitor.base.command.cmd.FindInProcessCMD;
 import com.github.misterchangra.appmonitor.base.command.result.FindInProcessCMDResult;
 
 import java.io.IOException;
@@ -11,11 +12,6 @@ import java.util.List;
 
 public class UDPUtil {
 
-    public static void main(String[] args) {
-        List<FindInProcessCMDResult> java = new FindInProcessCMD().execCmd("java").getResult();
-
-        System.out.println(22);
-    }
         public static void sendUDP(String ip, int port, byte[] data) throws IOException {
             //创建InetAddress对象,封装自己的IP地址
             InetAddress inet = InetAddress.getByName(ip);

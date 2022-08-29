@@ -1,16 +1,12 @@
 package com.github.changray.appmonitor.appmonitorserver.listeners;
 
 import com.github.changray.appmonitor.appmonitorserver.dao.AppInfoDao;
-import com.github.changray.appmonitor.appmonitorserver.dao.ServerInfoDao;
 import com.github.changray.appmonitor.appmonitorserver.dao.po.AppInfo;
-import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.github.changray.appmonitor.appmonitorserver.events.ConfigChangedEvent;
 import com.github.changray.appmonitor.appmonitorserver.events.ProtectProcessBySSHEvent;
 import com.github.changray.appmonitor.appmonitorserver.service.CheckerTask;
-import com.github.changray.appmonitor.appmonitorserver.service.ClientServers;
+import com.github.changray.appmonitor.appmonitorserver.service.ClientManagerServers;
 import com.github.changray.appmonitor.appmonitorserver.service.ConfigurationService;
-import com.github.changray.appmonitor.appmonitorserver.service.ssh.SSHClientService;
-import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConfig;
 import com.github.changray.appmonitor.appmonitorserver.service.tasks.CustomCheckerTask;
 import com.github.changray.appmonitor.appmonitorserver.service.tasks.FileNameCheckerTask;
 import com.github.changray.appmonitor.appmonitorserver.service.tasks.ProtCheckerTask;
@@ -18,12 +14,9 @@ import com.github.misterchangra.appmonitor.base.command.result.FindInProcessCMDR
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 
@@ -38,7 +31,7 @@ public class ProcessProtectListener {
 
 
     @Autowired
-    private ClientServers clientServers;
+    private ClientManagerServers clientManagerServers;
     @Autowired
     private AppInfoDao appInfoDao;
 
@@ -77,20 +70,20 @@ public class ProcessProtectListener {
                 //  2. 通过文件名来检测
                 //  3. 通过自定义命令检测
                 case 1:
-                    checkerTask = new ProtCheckerTask(processInfo, clientServers.getClientInfoByIp(processInfo.getServerIp()),
-                            clientServers.getSSHClientByIp(processInfo.getServerIp()));
+                    checkerTask = new ProtCheckerTask(processInfo, clientManagerServers.getClientInfoByIp(processInfo.getServerIp()),
+                            clientManagerServers.getSSHClientByIp(processInfo.getServerIp()));
                     break;
                 case 2:
-                    checkerTask = new FileNameCheckerTask(processInfo, clientServers.getClientInfoByIp(processInfo.getServerIp()),
-                            clientServers.getSSHClientByIp(processInfo.getServerIp()));
+                    checkerTask = new FileNameCheckerTask(processInfo, clientManagerServers.getClientInfoByIp(processInfo.getServerIp()),
+                            clientManagerServers.getSSHClientByIp(processInfo.getServerIp()));
                     break;
                 case 3:
-                    checkerTask = new CustomCheckerTask(processInfo, clientServers.getClientInfoByIp(processInfo.getServerIp()),
-                            clientServers.getSSHClientByIp(processInfo.getServerIp()));
+                    checkerTask = new CustomCheckerTask(processInfo, clientManagerServers.getClientInfoByIp(processInfo.getServerIp()),
+                            clientManagerServers.getSSHClientByIp(processInfo.getServerIp()));
                     break;
             }
 
-            FindInProcessCMDResult check = checkerTask.check();
+            FindInProcessCMDResult.ProcessResult check = checkerTask.check();
 
             refreshAppData(processInfo, check);
 
@@ -109,7 +102,7 @@ public class ProcessProtectListener {
      * @param processInfo
      * @param check
      */
-    private void refreshAppData(AppInfo processInfo, FindInProcessCMDResult check) {
+    private void refreshAppData(AppInfo processInfo, FindInProcessCMDResult.ProcessResult check) {
 
         Optional<AppInfo> byId = appInfoDao.findById(processInfo.getId());
         AppInfo appInfo = byId.get();

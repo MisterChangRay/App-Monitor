@@ -1,41 +1,62 @@
 package com.github.misterchangra.appmonitor.base.command.result;
 
-public class FindInProcessCMDResult extends BaseCMDResult{
-    private String name;
-    private String pid;
-    private String memUseKB;
+import com.github.misterchangra.appmonitor.base.command.BaseCMDResult;
 
-    public FindInProcessCMDResult(String name, String pid, String memUse) {
-        this.name = name;
-        this.pid = pid;
-        this.memUseKB = memUse;
+import java.util.List;
+
+public class FindInProcessCMDResult  extends BaseCMDResult {
+    private List<ProcessResult> processResultList;
+
+    public FindInProcessCMDResult(List<ProcessResult> processResultList) {
+        this.processResultList = processResultList;
     }
 
-    public FindInProcessCMDResult() {
-
+    public List<ProcessResult> getProcessResultList() {
+        return processResultList;
     }
 
-    public String getName() {
-        return name;
+    public void setProcessResultList(List<ProcessResult> processResultList) {
+        this.processResultList = processResultList;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public static class ProcessResult {
+        private String name;
+        private String pid;
+        private String memUseKB;
+
+        public ProcessResult(String name, String pid, String memUse) {
+            this.name = name;
+            this.pid = pid;
+            this.memUseKB = memUse;
+        }
+
+        public ProcessResult() {
+
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getPid() {
+            return pid;
+        }
+
+        public void setPid(String pid) {
+            this.pid = pid;
+        }
+
+        public String getMemUseKB() {
+            return memUseKB;
+        }
+
+        public void setMemUseKB(String memUseKB) {
+            this.memUseKB = memUseKB;
+        }
     }
 
-    public String getPid() {
-        return pid;
-    }
-
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
-
-    public String getMemUseKB() {
-        return memUseKB;
-    }
-
-    public void setMemUseKB(String memUseKB) {
-        this.memUseKB = memUseKB;
-    }
 }

@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS  app_info (
   port varchar(255) DEFAULT NULL ,
   remark varchar(255) DEFAULT NULL ,
   status int DEFAULT 0,
-  system_type int DEFAULT 0,
   server_ip varchar(255) DEFAULT NULL,
   process_id varchar(255) DEFAULT NULL,
   auto_restart int DEFAULT 0,
@@ -35,5 +34,6 @@ CREATE TABLE IF NOT EXISTS  server_info (
   create_time timestamp DEFAULT NULL,
   update_time timestamp DEFAULT NULL,
   report_time timestamp DEFAULT NULL,
+  system_type int DEFAULT 0,
   ext varchar(4096) default  null
 ) ;

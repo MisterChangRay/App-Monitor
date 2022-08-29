@@ -2,8 +2,8 @@ package com.github.misterchangray.appmonitor.appmonitorclient.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.misterchangra.appmonitor.base.command.SystemInfoCMD;
-import com.github.misterchangra.appmonitor.base.command.result.SystemInfoResut;
+import com.github.misterchangra.appmonitor.base.command.cmd.SystemInfoCMD;
+import com.github.misterchangra.appmonitor.base.command.result.SystemInfoResult;
 import com.github.misterchangra.appmonitor.base.consts.API;
 import com.github.misterchangra.appmonitor.base.dto.message.ClientInfo;
 import com.github.misterchangra.appmonitor.base.dto.message.ServerInfo;
@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
@@ -71,7 +70,7 @@ public class HeartbeatService implements ApplicationContextAware {
 
         SystemInfoCMD systemInfoCMD = new SystemInfoCMD();
         systemInfoCMD.execCmd(null);
-        SystemInfoResut result = systemInfoCMD.getResult();
+        SystemInfoResult result = systemInfoCMD.getResult();
 
         ClientInfo clientInfo = new ClientInfo( configuration.getClientIp(), configuration.getClientName(), configuration.getConfigSign());
         BeanUtils.copyProperties(result, clientInfo);

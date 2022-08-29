@@ -1,6 +1,8 @@
-package com.github.misterchangra.appmonitor.base.command;
+package com.github.misterchangra.appmonitor.base.command.cmd;
 
-import com.github.misterchangra.appmonitor.base.command.result.SystemInfoResut;
+import com.github.misterchangra.appmonitor.base.command.BaseCommand;
+import com.github.misterchangra.appmonitor.base.command.CommandExecutor;
+import com.github.misterchangra.appmonitor.base.command.result.SystemInfoResult;
 import com.github.misterchangra.appmonitor.base.util.TextUtil;
 
 import java.util.regex.Pattern;
@@ -10,23 +12,26 @@ import java.util.regex.Pattern;
  *
  * 用于保持链接的活跃性
  */
-public class IdleCMD extends BaseCommand<SystemInfoResut> {
-    @Override
-    public SystemInfoResut getResult(SYSTEM system) {
-        this.result = new StringBuilder("top - 11:24:45 up 327 days, 14:08,  1 user,  load average: 0.36, 0.35, 0.28\n" +
-                "Threads: 439 total,   1 running, 438 sleeping,   0 stopped,   0 zombie\n" +
-                "%Cpu(s):  2.9 us,  5.7 sy,  0.0 ni, 88.6 id,  0.0 wa,  0.0 hi,  2.9 si,  0.0 st\n" +
-                "MiB Mem :   7541.0 total,    843.2 free,   1802.7 used,   4895.2 buff/cache\n" +
-                "MiB Swap:      0.0 total,      0.0 free,      0.0 used.   5154.9 avail Mem");
+public class IdleCMD extends BaseCommand<SystemInfoResult> {
+    public IdleCMD(CommandExecutor commandExecutor) {
+        super(commandExecutor);
+    }
 
-        if(this.result == null) {
+    @Override
+    public SystemInfoResult getResult() {
+        if(this.executeResult == null) {
+            return null;
+        }
+        if(!this.executeResult.isSuccess()) {
             return null;
         }
 
+        StringBuilder result = this.executeResult.getData();
 
-        SystemInfoResut res = new SystemInfoResut();
-        if(this.getSystem() == SYSTEM.LINUX) {
-            String[] lines = this.result.toString().split("\n");
+
+        SystemInfoResult res = new SystemInfoResult();
+        if(this.getSystem() == CommandExecutor.SYSTEM.LINUX) {
+            String[] lines = result.toString().split("\n");
 
             for (int i = 0; i < lines.length; i++) {
                 this.readLine(lines[i], i, res);
@@ -37,16 +42,13 @@ public class IdleCMD extends BaseCommand<SystemInfoResut> {
     }
 
 
-    public static void main(String[] args) {
-        new IdleCMD().getResult();
-    }
     static Pattern line1 =  Pattern.compile(".*load average: (.+?), (.+?),.*");
     static Pattern line2 =  Pattern.compile(".*Threads: (.+?) total,.*");
     static Pattern line3 =  Pattern.compile(".*%Cpu\\(s\\):  (.+?) us,  (.+?) sy.*");
     static Pattern line4 =  Pattern.compile(".*MiB Mem :   (.+?) total,    (.+?) free,   (.+?) used.*");
 
 
-    private void readLine(String line, int lineNumber, SystemInfoResut res) {
+    private void readLine(String line, int lineNumber, SystemInfoResult res) {
         if(lineNumber  == 0) {
            res.setAvgload(TextUtil.match(line, line1, 2));
         }
@@ -65,7 +67,7 @@ public class IdleCMD extends BaseCommand<SystemInfoResut> {
     }
 
     @Override
-    public String getCommand(SYSTEM system) {
+    public String getCommand(CommandExecutor.SYSTEM system) {
         switch (system) {
             case LINUX:
                 return "pwd";

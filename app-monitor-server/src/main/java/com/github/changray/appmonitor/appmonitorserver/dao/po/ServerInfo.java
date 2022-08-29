@@ -30,6 +30,18 @@ public class ServerInfo {
     @Column(name="ext")
     private Date ext;
 
+    // 操作系统类型 0 linux 1 win
+    @Column(name="system_type")
+    private int systemType;
+
+
+    public int getSystemType() {
+        return systemType;
+    }
+
+    public void setSystemType(int systemType) {
+        this.systemType = systemType;
+    }
 
     public Date getExt() {
         return ext;

@@ -1,10 +1,11 @@
 package com.github.changray.appmonitor.appmonitorserver.service.ssh;
 
-import com.github.changray.appmonitor.appmonitorserver.listeners.ProcessProtectListener;
-import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConfig;
+import com.github.changray.appmonitor.appmonitorserver.dao.po.ServerInfo;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHConnectInfo;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHExecuteInfo;
 import com.github.changray.appmonitor.appmonitorserver.service.ssh.dto.SSHSessionContext;
+import com.github.misterchangra.appmonitor.base.command.CommandExecutor;
+import com.github.misterchangra.appmonitor.base.command.BaseCMDResult;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -15,17 +16,52 @@ import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.*;
 
-public class SSHClientService {
-    static Logger logger = LoggerFactory.getLogger(SSHClientService.class.getName());
+public class SSHClient extends CommandExecutor {
+    static Logger logger = LoggerFactory.getLogger(SSHClient.class.getName());
 
+    /**
+     * 0 初始化
+     * 1 成功连接
+     * 2 连接失败
+     *
+     */
+    private CLIENT_STATUS status = CLIENT_STATUS.INIT;
+    private ServerInfo serverInfo;
+
+
+    public enum CLIENT_STATUS {
+        INIT, CONNECT_SUCCESS, CONNECT_FAILED;
+    }
 
     //创建一个ssh通讯核心类
     JSch jSch = new JSch();
     SSHSessionContext sessionContext;
     ExecutorService es1 = Executors.newSingleThreadExecutor();
+
+    public CLIENT_STATUS getStatus() {
+        return status;
+    }
+
+    public SSHSessionContext getSessionContext() {
+        return sessionContext;
+    }
+
+    @Override
+    public BaseCMDResult execute(CommandExecutor.SYSTEM system, String cmd) {
+        if(system == SYSTEM.WINDOWS) {
+            return new BaseCMDResult(null, false, "不支持windows");
+        }
+
+        SSHExecuteInfo sshExecuteInfo = new SSHExecuteInfo();
+        sshExecuteInfo.setCommand(cmd);
+        SSHExecuteInfo execute = this.execute(sshExecuteInfo);
+
+        return new BaseCMDResult(new StringBuilder(execute.getResult()), execute.isSuccess(), execute.getDesc());
+    }
 
 
     public SSHExecuteInfo execute(SSHExecuteInfo sshExecuteInfo) {
@@ -87,25 +123,27 @@ public class SSHClientService {
     }
 
 
-    public SSHConnectInfo test(SSHConfig sshConfig) {
+    public SSHConnectInfo test(ServerInfo serverInfo) {
         SSHConnectInfo sshConnectInfo = new SSHConnectInfo();
-        BeanUtils.copyProperties(sshConfig, sshConnectInfo);
+        BeanUtils.copyProperties(serverInfo, sshConnectInfo);
         try {
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
 
-            Session sessiont = jSch.getSession(sshConfig.getUsername(), sshConfig.getHost(), sshConfig.getPort());
-            sessiont.setPassword(sshConfig.getPassword());
+            Session sessiont = jSch.getSession(serverInfo.getUsername(), serverInfo.getIp(), Integer.valueOf(serverInfo.getPort()));
+            sessiont.setPassword(serverInfo.getPassword());
             sessiont.setTimeout(4000);
             sessiont.setConfig(config);
             sessiont.connect();
             sshConnectInfo.setSuccess(true);
 
             SSHSessionContext sshSessionContext = new SSHSessionContext();
-            BeanUtils.copyProperties(sshConfig, sshSessionContext);
+            BeanUtils.copyProperties(serverInfo, sshSessionContext);
             sshSessionContext.setSession(sessiont);
             sessionContext = sshSessionContext;
+            this.status = CLIENT_STATUS.CONNECT_SUCCESS;
         } catch (JSchException e) {
+            this.status = CLIENT_STATUS.CONNECT_FAILED;
             sshConnectInfo.setSuccess(false);
             sshConnectInfo.setDesc(e.getMessage());
         }
@@ -113,10 +151,10 @@ public class SSHClientService {
     }
 
 
-    public SSHClientService() {
+    public SSHClient() {
     }
 
-    public SSHClientService(SSHConfig sshConfig) {
+    public SSHClient(ServerInfo sshConfig) {
         test(sshConfig);
     }
 
