@@ -7,8 +7,9 @@ import java.util.List;
 public class FindInProcessCMDResult  extends BaseCMDResult {
     private List<ProcessResult> processResultList;
 
-    public FindInProcessCMDResult(List<ProcessResult> processResultList) {
+    public FindInProcessCMDResult(List<ProcessResult> processResultList, boolean success) {
         this.processResultList = processResultList;
+        this.setSuccess(success);
     }
 
     public List<ProcessResult> getProcessResultList() {

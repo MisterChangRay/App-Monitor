@@ -29,8 +29,8 @@ public class ClientManagerServers {
 
     @EventListener(value = {ConfigChangedEvent.class})
     public void configChanges() {
-        this.serverCache = null;
-        this.sshClientServices = null;
+        this.serverCache = new HashMap<>();
+        this.sshClientServices = new HashMap<>();
     }
 
     private void refreshServerInfo() {
@@ -78,7 +78,7 @@ public class ClientManagerServers {
             sshClient = new SSHClient(serverInfo);
             sshClientServices.put(serverInfo.getIp(), sshClient);
         } else {
-            sshClientServices.get(ip);
+            sshClient = sshClientServices.get(ip);
         }
         return sshClient;
     }

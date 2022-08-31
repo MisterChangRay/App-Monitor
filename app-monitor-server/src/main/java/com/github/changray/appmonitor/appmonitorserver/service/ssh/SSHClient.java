@@ -63,6 +63,11 @@ public class SSHClient extends CommandExecutor {
         return new BaseCMDResult(new StringBuilder(execute.getResult()), execute.isSuccess(), execute.getDesc());
     }
 
+    @Override
+    public SYSTEM getSystem() {
+        return SYSTEM.LINUX;
+    }
+
 
     public SSHExecuteInfo execute(SSHExecuteInfo sshExecuteInfo) {
         Future<SSHExecuteInfo> exec = es1.submit(new Callable<SSHExecuteInfo>() {

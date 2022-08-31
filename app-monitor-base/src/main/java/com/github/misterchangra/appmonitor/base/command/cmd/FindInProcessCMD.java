@@ -42,6 +42,10 @@ public class FindInProcessCMD extends BaseCommand<FindInProcessCMDResult> {
             compile = Pattern.compile("(.+?)\\s+?(\\d+)\\s+.+?\\s+?(\\d+)\\s+?(\\d+)\\s+?\\S+\\s+?\\S+\\s+?\\S+\\s+?\\S+\\s+?(.*)");
         }
         for (String s : split) {
+            if(TextUtil.isEmpty(s)) {
+                continue;
+            }
+
             if(system == CommandExecutor.SYSTEM.LINUX) {
                 Matcher matcher = TextUtil.match0(s, compile);
                 if(matcher.find()) {
@@ -58,7 +62,7 @@ public class FindInProcessCMD extends BaseCommand<FindInProcessCMDResult> {
 
         }
 
-        return new FindInProcessCMDResult(res);
+        return new FindInProcessCMDResult(res, true);
     }
 
     @Override

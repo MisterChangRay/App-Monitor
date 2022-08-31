@@ -3,9 +3,11 @@ package com.github.misterchangra.appmonitor.base.command.cmd;
 import com.github.misterchangra.appmonitor.base.command.BaseCommand;
 import com.github.misterchangra.appmonitor.base.command.CommandExecutor;
 import com.github.misterchangra.appmonitor.base.command.result.FindInProcessCMDResult;
+import com.github.misterchangra.appmonitor.base.util.TextUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -32,6 +34,10 @@ public class FindInProcessByPortCMD extends BaseCommand<FindInProcessCMDResult> 
         List<FindInProcessCMDResult.ProcessResult> res = new ArrayList();
         String[] split = result.toString().split("\n");
         for (String s : split) {
+            if(TextUtil.isEmpty(s)) {
+                continue;
+            }
+
             String[] split1 = s.split("\\s+");
             switch (this.getSystem()) {
                 case WINDOWS:
@@ -43,7 +49,7 @@ public class FindInProcessByPortCMD extends BaseCommand<FindInProcessCMDResult> 
             }
         }
 
-        return new FindInProcessCMDResult(res);
+        return new FindInProcessCMDResult(res, true);
     }
 
     @Override

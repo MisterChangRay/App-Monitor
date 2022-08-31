@@ -1,11 +1,15 @@
 package com.github.misterchangra.appmonitor.base.util;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextUtil {
 
 
+    public static boolean isEmpty(String s) {
+        return Objects.isNull(s) || s.length() == 0;
+    }
 
     public static String match(String text, Pattern p) {
       return match(text, p, 1);
